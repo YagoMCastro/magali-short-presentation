@@ -91,23 +91,6 @@ Aplicação de medições magnéticas de minerais de rochas para resolver proble
   - Permite compreender como o **campo magnético** terrestre **evoluiu** ao longo de centenas de milhões de anos
 
 ===============================================================================
-# Tipos de Grãos Magnéticos
-<div class="text-left fragment">
-
-- **Multidomínio (MD):** são grãos maiores que se subdividem em vários domínios, cada um apontando em direções diferentes. Isto reduz a estabilidade magnética, tornando-os registradores pouco confiáveis
-</div>
-
-<div class="text-left fragment">
-
-- **Domínio Único (SD):** são grãos pequenos em que a magnetização permanece uniforme e alinhada em uma única direção, apresentando altíssima estabilidade
-</div>
-
-<div class="text-left fragment">
-
-- **Pseudo-Domínio Único (PSD):** apresentam tamanhos intermediários, podem registrar o campo magnético com elevada fidelidade e estabilidade, contrariando interpretações mais antigas que os consideravam menos confiáveis
-</div>
-
-===============================================================================
 # Limitações do Paleomagnetismo
 <div class="text-left fragment">
 
