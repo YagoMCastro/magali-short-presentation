@@ -54,57 +54,56 @@ Feel free to screenshot/share/reuse this presentation
 </div>
 
 ===============================================================================
-# O que é Paleomagnetismo?
+# What is Paleomagnetism?
 <div class="quote">
 
-Aplicação de medições magnéticas de minerais de rochas para resolver problemas geológicos
-
+Application of magnetic measurements of rock minerals to solve geological problems
 
 </div>
 <div class="footnote-center">
 
-[Notas de aula de Lisa Tauxe](https://magician.ucsd.edu/SIO247/)
+[Lisa Tauxe Lecture Notes](https://magician.ucsd.edu/SIO247/)
 </div>
 
 ===============================================================================
-# Como os minerais são magnetizados?
+# How are minerals magnetized?
 
 - <!-- .element: class="fragment" -->
-  - **Magnetização Remanente Termal (TRM):** rochas ígneas registram o campo magnético  à medida que esfriam abaixo do ponto de Curie (ex.: magnetita pura: **580°C**)
+  - **Thermal Remanent Magnetization (TRM):** igneous rocks record the magnetic field as they cool below the Curie temperature (e.g., pure magnetite: **580°C**)
 
 - <!-- .element: class="fragment" -->
-  - **Magnetização Remanente Deposicional (DRM):** partículas magnéticas em sedimentos se alinham com o campo magnético da Terra durante a deposição em ambientes aquáticos
+  - **Depositional Remanent Magnetization (DRM):** magnetic particles in sediments align with the Earth's magnetic field during deposition in aquatic environments
 
 ===============================================================================
-# Por que o paleomagnetismo é importante?
+# Why is paleomagnetism important?
 
 - <!-- .element: class="fragment" -->
-  - **Reversões geomagnéticas** mostram que o campo magnético da Terra já se **inverteu** muitas vezes ao longo de sua história
+  - **Geomagnetic reversals** show that the Earth's magnetic field has **reversed polarity** many times throughout its history
 
 - <!-- .element: class="fragment" -->
-  - Ajudou a confirmar a teoria da **deriva continental** e a reconstruir as **posições** passadas dos continentes
+  - Helped confirm the theory of **continental drift** and reconstruct past **positions** of the continents
 
 - <!-- .element: class="fragment" -->
-  - Utilizado como ferramenta de **datação relativa** ao comparar registros em rochas com a escala de tempo conhecida das reversões magnéticas **(magnetoestratigrafia)**
+  - Used as a **relative dating** tool by comparing rock records with the known timescale of magnetic reversals **(magnetostratigraphy)**
 
 - <!-- .element: class="fragment" -->
-  - Permite compreender como o **campo magnético** terrestre **evoluiu** ao longo de centenas de milhões de anos
+  - Makes it possible to understand how the Earth's **magnetic field** has **evolved** over hundreds of millions of years
 
 ===============================================================================
-# Limitações do Paleomagnetismo
+# Limitations of Paleomagnetism
 <div class="text-left fragment">
 
-- Sobreposição com **magnetizações secundárias** e impossibilidade de **separar o sinal** de minerais diferentes **sem alterar** propriedades da amostra (ex: magnetita vs. hematita)
-</div>
-
-<div class="text-left fragment">
-
-- Amostras com **sinais muito fracos** não superam o ruído de fundo dos magnetômetros convencionais
+- Overprinting by **secondary magnetizations** and the impossibility of **separating signals** from different minerals **without altering** sample properties (e.g., magnetite vs. hematite)
 </div>
 
 <div class="text-left fragment">
 
-- Diversos métodos **alteram a amostra**, seja alterando a magnetização ou destruindo-a
+- Samples with **very weak signals** cannot overcome the background noise of conventional magnetometers
+</div>
+
+<div class="text-left fragment">
+
+- Several methods **alter the sample**, either by modifying or destroying its magnetization
 </div>
 
 ===============================================================================
@@ -122,12 +121,19 @@ Aplicação de medições magnéticas de minerais de rochas para resolver proble
 
 <div class="text-left fragment">
 
-- **The Data:** The QDM generates **magnetic field maps** of the sample's surface with **micrometric** spatial resolution at room temperature.
+- **The Data:** the QDM generates **magnetic field maps** of the sample's surface with **micrometric** spatial resolution at room temperature.
 </div>
 
 <div class="text-left fragment">
 
-- **The Algorithmic Challenge:** The input is a dense N-dimensional grid with thousands of overlapping anomalous dipole sources. The desired output is the spatial positions ($x, y, z$) and magnetic moments ($m_x, m_y, m_z$) of each individual particle.
+- **The Algorithmic Challenge:** the input is a dense N-dimensional grid with thousands of overlapping anomalous dipole sources. The desired output is the spatial positions ($x, y, z$) and magnetic moments ($m_x, m_y, m_z$) of each individual particle.
+
+</div>
+
+<div class="text-left fragment">
+
+- **Desired output**: spatial positions ($x, y, z$) and magnetic moments ($m_x, m_y, m_z$) of each individual particle.
+
 </div>
 
 ===============================================================================
@@ -152,18 +158,6 @@ Aplicação de medições magnéticas de minerais de rochas para resolver proble
 
 [Souza-Junior et al 2025](https://eartharxiv.org/repository/view/8869/)
 </div>
-
-===============================================================================
-
-<!-- .slide: class="slide-title" data-background-opacity="1" data-background-image="assets/ceramic.png"  data-background-size="contain" -->
-
-<div class="r-stretch">
-</div>
-<div class="footnote-center">
-
-[Souza-Junior et al 2025](https://eartharxiv.org/repository/view/8869/)
-</div>
-
 
 ===============================================================================
 <img src="assets/paper_2.png" style="width: 80%" >
