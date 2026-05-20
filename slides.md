@@ -122,22 +122,12 @@ Aplicação de medições magnéticas de minerais de rochas para resolver proble
 
 <div class="text-left fragment">
 
-- Utiliza uma placa de diamante sintético com defeitos cristalinos chamados **Centros Nitrogênio-Vacância (NV)**
+- **The Data:** The QDM generates **magnetic field maps** of the sample's surface with **micrometric** spatial resolution at room temperature.
 </div>
 
 <div class="text-left fragment">
 
-- Ao receber um laser verde e micro-ondas, os centros NV emitem uma luz. A **intensidade dessa fluorescência** é alterada de acordo com o **campo magnético** da rocha próxima ao diamante
-</div>
-
-<div class="text-left fragment">
-
-- Uma câmera captura essa luz e gera um **mapa do campo magnético** da superfície medida com resolução espacial **micrométrica**
-</div>
-
-<div class="text-left fragment">
-
-- Diferente de sensores criogênicos, o QDM opera em **temperatura ambiente**, simplificando a **logística laboratorial**
+- **The Algorithmic Challenge:** The input is a dense N-dimensional grid with thousands of overlapping anomalous dipole sources. The desired output is the spatial positions ($x, y, z$) and magnetic moments ($m_x, m_y, m_z$) of each individual particle.
 </div>
 
 ===============================================================================
@@ -161,41 +151,6 @@ Aplicação de medições magnéticas de minerais de rochas para resolver proble
 <div class="footnote-center">
 
 [Souza-Junior et al 2025](https://eartharxiv.org/repository/view/8869/)
-</div>
-
-===============================================================================
-# Temos um problema
-
-===============================================================================
-<img src="assets/berndt_paper.png" style="width: 80%">
-
-- $10^7$ a $10^9$ de grãos seriam necessários para uma rocha obter direções confiáveis
-
-===============================================================================
-<img src="assets/bellon_paper.png" style="width: 80%">
-
-===============================================================================
-# Bellon et al. (2025)
-
-<div class="text-left">
-
-- **Investigaram** a aquisição de TRM por milhares de partículas nanoscópicas no **estado de vórtex**
-
-</div>
-<div class="fragment text-left">
-
-- **Simularam** o comportamento desses conjuntos sob diversas intensidades de campos magnéticos
-
-</div>
-<div class="fragment text-left">
-
-- **Demonstraram** que o quando as partículas são afetadas com campos maiores que **20 μT**, o paleocampo é registrado com extrema precisão (**erro angular < 1°**)
-
-</div>
-
-<div class="footnote-center">
-
-[Bellon et al. (2025)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2025GL114771)
 </div>
 
 ===============================================================================
