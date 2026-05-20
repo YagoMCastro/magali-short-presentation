@@ -164,34 +164,35 @@ Application of magnetic measurements of rock minerals to solve geological proble
 
 ===============================================================================
 <p class="text-left fragment" data-fragment-index="0">
-  <b>Etapa 1 - Detecção da fonte</b>
+  <b>Step 1 - Source detection</b>
 </p>
 
 <p class="text-left fragment" data-fragment-index="1">
-  <b>Etapa 2 - Processamento iterativo (por janela)</b>
+  <b>Step 2 - Iterative processing (per window)</b>
 </p>
 
 <ul>
   <li class="text-left fragment" data-fragment-index="2">
-    (a) <b>Isolamento dos dados:</b> selecionar os dados magnéticos dentro da janela
+    (a) <b>Data isolation:</b> select the magnetic data within the window
   </li>
   <li class="text-left fragment" data-fragment-index="3">
-    (b) <b>Deconvolução de Euler:</b> estimar a <em>posição</em> da fonte
+    (b) <b>Euler deconvolution:</b> estimate the source <em>position</em>
   </li>
   <li class="text-left fragment" data-fragment-index="4">
-    (c) <b>Inversão linear:</b> estimar o <em>momento</em> do dipolo usando posição fixa
+    (c) <b>Linear inversion:</b> estimate the dipole <em>moment</em> using a fixed position
   </li>
   <li class="text-left fragment" data-fragment-index="5">
-    (d) <b>Inversão não linear:</b> refinar posição e momento via 
+    (d) <b>Nonlinear inversion:</b> refine position and moment via 
     <a href="https://academic.oup.com/comjnl/article-abstract/7/4/308/354237?redirectedFrom=fulltext">Nelder-Mead</a>
   </li>
   <li class="text-left fragment" data-fragment-index="7">
-    (e) <b>Remoção do sinal:</b> modelar o dipolo diretamente e subtrair do conjunto de dados completo
+    (e) <b>Signal removal:</b> directly model the dipole and subtract it from the full dataset
   </li>
 </ul>
+
 <p class="text-left fragment" data-fragment-index="8">
-  <b>Etapa 3 - Repetir a detecção nos dados residuais:</b>
-  aplicar as etapas 1 e 2 ao conjunto de dados residual
+  <b>Step 3 - Repeat detection on the residual data:</b>
+  apply steps 1 and 2 to the residual dataset
 </p>
 
 ===============================================================================
@@ -234,7 +235,7 @@ Magali
 
 <div class="large fragment">
 
-Free and open-source software  
+Free and open-source  
 
 <i class="fab fa-github"></i> <i class="fas fa-lock-open"></i> <i class="fab fa-osi"></i>
 
@@ -253,6 +254,270 @@ Modeling and processing magnetic microscopy data
 </div>
 
 ===============================================================================
+
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+  <span class="fragment code">import magali as mg</span>
+  <span class="fragment code">import numpy as np</span>
+  <span class="fragment code">import matplotlib.pyplot as plt</span>
+  <span class="fragment code">import skimage.exposure</span>
+  <span class="fragment code">import ensaio</span>
+  <span class="fragment code">import harmonica as hm</span>
+</code></pre>
+</section>
+
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span class="fragment code">data_paths = {</span>
+<span class="fragment code">    # Use Ensaio to get the dataset</span>
+<span class="fragment code">    "speleothem": ensaio.fetch_morroco_speleothem_qdm(</span>
+<span class="fragment code">        version=1,</span>
+<span class="fragment code">        file_format="matlab",</span>
+<span class="fragment code">    ),</span>
+<span class="fragment code">    "ceramic": "data/ceramic/NRM1.mat",</span>
+<span class="fragment code">    "basalt": "data/basalt/NRM1.mat",</span>
+<span class="fragment code">}</span>
+</code></pre>
+</section>
+
+
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;    
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span>
+<span class="fragment code"># Process each dataset, but using slightly different parameters</span>
+<span class="fragment code">size_ranges = {"speleothem": [20, 150], "ceramic": [10, 150], "basalt": [10, 30]}</span>
+<span class="fragment code">detection_thresholds = {"speleothem": 0.02, "ceramic": 0.02, "basalt": 0.002}</span>
+<span class="fragment code">datasets, locations, dipole_moments, bounding_boxes = {}, {}, {}, {}</span>
+</code></pre>
+</section>
+
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment-code {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    line-height: 0.2em;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span>
+<span class="fragment code">for name in ["speleothem", "ceramic", "basalt"]:</span>
+<span class="fragment code">    # Use Magali to load the data in Matlab Harvard QDM format</span>
+<span class="fragment code">    datasets[name] = mg.read_qdm_harvard(data_paths[name])
+</code></pre>
+</section>
+
+
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+</style>
+<pre class="compact"><code class="txt" data-trim data-noescape>
+xarray.DataArray 'bz' (y: 600, x: 960)> Size: 5MB
+array([[ 352.40587477,   94.8913792 ,   41.61924299, ...,  470.18833933,
+         129.20055397,   18.50120941],
+       [ 525.04809649,  624.84659897,   53.45418   , ...,  450.42515609,
+         240.12455308,  -73.61367693],
+       [ 105.0939369 ,  638.76559489,  307.60736872, ...,  236.91326522,
+         386.8498122 ,  -86.44215589],
+       ...,
+       [ -83.74367957,   32.98078244, -411.75073652, ...,  745.99373583,
+        1036.20033954, -140.64317643],
+       [ 171.17113661, -214.47801235,  159.23437984, ...,  124.58138395,
+         258.54331931,  -90.3376945 ],
+       [  80.60950354,  273.08367487,  118.23499313, ...,   -4.19572521,
+         -53.55728012,    2.10335918]])
+Coordinates:
+  * x        (x) float64 8kB 0.0 2.35 4.7 7.05 ... 2.249e+03 2.251e+03 2.254e+03
+  * y        (y) float64 5kB 0.0 2.35 4.7 7.05 ... 1.403e+03 1.405e+03 1.408e+03
+    z        (y, x) float64 5MB 5.0 5.0 5.0 5.0 5.0 5.0 ... 5.0 5.0 5.0 5.0 5.0
+Attributes:
+    long_name:  vertical magnetic field
+    units:      nT
+</code></pre>
+</section>
+
+
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment-code {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    line-height: 0.2em;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span>
+<span class="code">for name in ["speleothem", "ceramic", "basalt"]:</span>
+<span style="margin-top: +0.5em !important;"  class="fragment code">    # Use o Magali para carregar os dados do formato de arquivo QDM Matlab de Harvard</span>
+<span class="fragment code">    datasets[name] = mg.read_qdm_harvard(data_paths[name])</span>
+<span class="fragment code">    # Upward continue the data 5 micrometers using Harmonica</span>
+<span class="fragment code">    height_difference = 5</span>
+<span class="fragment code">    data_up = (</span>
+<span class="fragment code">        hm.upward_continuation(datasets[name], height_difference)</span>
+<span class="fragment code">        .assign_attrs(datasets[name].attrs)</span>
+<span class="fragment code">        .assign_coords(x=datasets[name].x, y=datasets[name].y)</span>
+<span class="fragment code">        .assign_coords(z=datasets[name].z + height_difference)</span>
+<span class="fragment code">        .rename("bz")</span>
+<span class="fragment code">    )</span>
+<span class="fragment code">    # Calcule data derivatives and TGA</span>
+<span class="fragment code">    data_tga = mg.total_gradient_amplitude_grid(data_up)</span>
+<span class="fragment code">    # Stretch TGA contrast to enhance signals from weak soures</span>
+<span class="fragment code">    data_stretched = skimage.exposure.rescale_intensity(</span>
+<span class="fragment code">        data_tga,</span>
+<span class="fragment code">        in_range=tuple(np.percentile(data_tga, (1, 99))),</span>
+<span class="fragment code">    )</span>
+</code></pre>
+</section>
+
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span>
+<span class="fragment code">    # Use LoG to detect on the contrast stretched TGA data</span>
+<span class="fragment code">    bounding_boxes[name] = mg.detect_anomalies(</span>
+<span class="fragment code">        data_stretched,</span>
+<span class="fragment code">        size_range=size_ranges[name],  # μm</span>
+<span class="fragment code">        detection_threshold=detection_thresholds[name],</span>
+<span class="fragment code">        border_exclusion=2,</span>
+<span class="fragment code">    )</span>
+<span class="fragment code">    # Use nonlinear inversion to estimate dipolar moments and source locations</span>
+<span class="fragment code">    results = mg.iterative_nonlinear_inversion(</span>
+<span class="fragment code">        data_up, bounding_boxes[name], copy_data=True</span>
+<span class="fragment code">    )</span>
+<span class="fragment code">    locations[name] = results[1]</span>
+<span class="fragment code">    dipole_moments[name] = results[2]</span>
+</code></pre>
+</section>
+
+===============================================================================
+
 <h2>Etapa 1: Detecção da Fonte</h2>
   
 <p class="text-left">
@@ -737,17 +1002,6 @@ m_x \\
 m_y \\
 m_z
 \end{bmatrix}^\top 
-$$
-
-===============================================================================
-$$
-\frac{\partial^2}{\partial z \partial x} \frac{1}{r} = \frac{3(z - z_c)(x - x_c)}{r^5}
-$$
-$$
-\frac{\partial^2}{\partial z \partial y} \frac{1}{r} = \frac{3(z - z_c)(y - y_c)}{r^5}
-$$
-$$
-\frac{\partial^2}{\partial z \partial z} \frac{1}{r} = \frac{3(z - z_c)^2}{r^5} - \frac{1}{r^3}
 $$
 
 ===============================================================================
@@ -1303,266 +1557,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 ===============================================================================
-<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
-<section>
-<style>
-  pre.compact code {
-    line-height: 1.0em !important;
-    font-size: 1.3em !important;
-  }
-  .fragment {
-    display: block;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important;
-  }
-  .block-space {
-    margin-top: -1.0em !important;
-  }
-  .code {
-    line-height: 0.2em;
-  }
-</style>
-<pre class="compact"><code class="python" data-trim data-noescape>
-  <span class="fragment code">import magali as mg</span>
-  <span class="fragment code">import numpy as np</span>
-  <span class="fragment code">import matplotlib.pyplot as plt</span>
-  <span class="fragment code">import skimage.exposure</span>
-  <span class="fragment code">import ensaio</span>
-  <span class="fragment code">import harmonica as hm</span>
-</code></pre>
-</section>
-
-===============================================================================
-<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
-
-<section>
-<style>
-  pre.compact code {
-    line-height: 1.0em !important;
-    font-size: 1.3em !important;
-  }
-  .fragment {
-    display: block;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important;
-  }
-  .block-space {
-    margin-top: -1.0em !important;
-  }
-  .code {
-    line-height: 0.2em;
-  }
-</style>
-<pre class="compact"><code class="python" data-trim data-noescape>
-<span class="fragment code">data_paths = {</span>
-<span class="fragment code">    # Use o pacote Ensaio para buscar o conjunto de dados de espeleotema na internet</span>
-<span class="fragment code">    "speleothem": ensaio.fetch_morroco_speleothem_qdm(</span>
-<span class="fragment code">        version=1,</span>
-<span class="fragment code">        file_format="matlab",</span>
-<span class="fragment code">    ),</span>
-<span class="fragment code">    "ceramic": "data/ceramic/NRM1.mat",</span>
-<span class="fragment code">    "basalt": "data/basalt/NRM1.mat",</span>
-<span class="fragment code">}</span>
-</code></pre>
-</section>
-
-
-===============================================================================
-<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
-
-<section>
-<style>
-  pre.compact code {
-    line-height: 1.0em !important;
-    font-size: 1.3em !important;
-  }
-  .fragment {
-    display: block;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important;    
-  }
-  .block-space {
-    margin-top: -1.0em !important;
-  }
-  .code {
-    line-height: 0.2em;
-  }
-</style>
-<pre class="compact"><code class="python" data-trim data-noescape>
-<span>
-<span class="fragment code"># Processa cada conjunto de dados, mas utilizando parâmetros ligeiramente diferentes</span>
-<span class="fragment code">size_ranges = {"speleothem": [20, 150], "ceramic": [10, 150], "basalt": [10, 30]}</span>
-<span class="fragment code">detection_thresholds = {"speleothem": 0.02, "ceramic": 0.02, "basalt": 0.002}</span>
-<span class="fragment code">datasets, locations, dipole_moments, bounding_boxes = {}, {}, {}, {}</span>
-</code></pre>
-</section>
-
-===============================================================================
-<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
-
-<section>
-<style>
-  pre.compact code {
-    line-height: 1.0em !important;
-    font-size: 1.3em !important;
-  }
-  .fragment-code {
-    display: block;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important;
-    line-height: 0.2em;
-  }
-  .block-space {
-    margin-top: -1.0em !important;
-  }
-  .code {
-    line-height: 0.2em;
-  }
-</style>
-<pre class="compact"><code class="python" data-trim data-noescape>
-<span>
-<span class="fragment code">for name in ["speleothem", "ceramic", "basalt"]:</span>
-<span class="fragment code">    # Use o Magali para carregar os dados do formato de arquivo QDM Matlab de Harvard</span>
-<span class="fragment code">    datasets[name] = mg.read_qdm_harvard(data_paths[name])
-</code></pre>
-</section>
-
-
-===============================================================================
-<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
-
-<section>
-<style>
-  pre.compact code {
-    line-height: 1.0em !important;
-    font-size: 1.3em !important;
-  }
-  .fragment {
-    display: block;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important;
-  }
-  .block-space {
-    margin-top: -1.0em !important;
-  }
-</style>
-<pre class="compact"><code class="txt" data-trim data-noescape>
-xarray.DataArray 'bz' (y: 600, x: 960)> Size: 5MB
-array([[ 352.40587477,   94.8913792 ,   41.61924299, ...,  470.18833933,
-         129.20055397,   18.50120941],
-       [ 525.04809649,  624.84659897,   53.45418   , ...,  450.42515609,
-         240.12455308,  -73.61367693],
-       [ 105.0939369 ,  638.76559489,  307.60736872, ...,  236.91326522,
-         386.8498122 ,  -86.44215589],
-       ...,
-       [ -83.74367957,   32.98078244, -411.75073652, ...,  745.99373583,
-        1036.20033954, -140.64317643],
-       [ 171.17113661, -214.47801235,  159.23437984, ...,  124.58138395,
-         258.54331931,  -90.3376945 ],
-       [  80.60950354,  273.08367487,  118.23499313, ...,   -4.19572521,
-         -53.55728012,    2.10335918]])
-Coordinates:
-  * x        (x) float64 8kB 0.0 2.35 4.7 7.05 ... 2.249e+03 2.251e+03 2.254e+03
-  * y        (y) float64 5kB 0.0 2.35 4.7 7.05 ... 1.403e+03 1.405e+03 1.408e+03
-    z        (y, x) float64 5MB 5.0 5.0 5.0 5.0 5.0 5.0 ... 5.0 5.0 5.0 5.0 5.0
-Attributes:
-    long_name:  vertical magnetic field
-    units:      nT
-</code></pre>
-</section>
-
-
-===============================================================================
-<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
-
-<section>
-<style>
-  pre.compact code {
-    line-height: 1.0em !important;
-    font-size: 1.3em !important;
-  }
-  .fragment-code {
-    display: block;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important;
-    line-height: 0.2em;
-  }
-  .block-space {
-    margin-top: -1.0em !important;
-  }
-  .code {
-    line-height: 0.2em;
-  }
-</style>
-<pre class="compact"><code class="python" data-trim data-noescape>
-<span>
-<span class="code">for name in ["speleothem", "ceramic", "basalt"]:</span>
-<span style="margin-top: +0.5em !important;"  class="fragment code">    # Use o Magali para carregar os dados do formato de arquivo QDM Matlab de Harvard</span>
-<span class="fragment code">    datasets[name] = mg.read_qdm_harvard(data_paths[name])</span>
-<span class="fragment code">    # Continue os dados para cima em 5 micrômetros utilizando o pacote Harmonica</span>
-<span class="fragment code">    height_difference = 5</span>
-<span class="fragment code">    data_up = (</span>
-<span class="fragment code">        hm.upward_continuation(datasets[name], height_difference)</span>
-<span class="fragment code">        .assign_attrs(datasets[name].attrs)</span>
-<span class="fragment code">        .assign_coords(x=datasets[name].x, y=datasets[name].y)</span>
-<span class="fragment code">        .assign_coords(z=datasets[name].z + height_difference)</span>
-<span class="fragment code">        .rename("bz")</span>
-<span class="fragment code">    )</span>
-<span class="fragment code">    # Calcule as derivadas dos dados e o TGA</span>
-<span class="fragment code">    data_tga = mg.total_gradient_amplitude_grid(data_up)</span>
-<span class="fragment code">    # Estique o contraste do TGA para destacar fontes fracas</span>
-<span class="fragment code">    data_stretched = skimage.exposure.rescale_intensity(</span>
-<span class="fragment code">        data_tga,</span>
-<span class="fragment code">        in_range=tuple(np.percentile(data_tga, (1, 99))),</span>
-<span class="fragment code">    )</span>
-</code></pre>
-</section>
-
-===============================================================================
-<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
-
-<section>
-<style>
-  pre.compact code {
-    line-height: 1.0em !important;
-    font-size: 1.3em !important;
-  }
-  .fragment {
-    display: block;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important;
-  }
-  .block-space {
-    margin-top: -1.0em !important;
-  }
-  .code {
-    line-height: 0.2em;
-  }
-</style>
-<pre class="compact"><code class="python" data-trim data-noescape>
-<span>
-<span class="fragment code">    # Use o LoG para detectar as fontes no TGA com contraste esticado</span>
-<span class="fragment code">    bounding_boxes[name] = mg.detect_anomalies(</span>
-<span class="fragment code">        data_stretched,</span>
-<span class="fragment code">        size_range=size_ranges[name],  # μm</span>
-<span class="fragment code">        detection_threshold=detection_thresholds[name],</span>
-<span class="fragment code">        border_exclusion=2,</span>
-<span class="fragment code">    )</span>
-<span class="fragment code">    # Execute a inversão não linear para estimar os momentos dipolares e as localizações</span>
-<span class="fragment code">    results = mg.iterative_nonlinear_inversion(</span>
-<span class="fragment code">        data_up, bounding_boxes[name], copy_data=True</span>
-<span class="fragment code">    )</span>
-<span class="fragment code">    locations[name] = results[1]</span>
-<span class="fragment code">    dipole_moments[name] = results[2]</span>
-</code></pre>
-</section>
 
 ===============================================================================
 # Estalagmite
