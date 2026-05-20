@@ -200,30 +200,30 @@ Application of magnetic measurements of rock minerals to solve geological proble
 ===============================================================================
 <!-- .slide: data-background-opacity="0.2" data-background-image="assets/magali-logo.png"  data-background-size="contain" data-background-color="#262626" -->
 
-# Por que queremos desenvolvê-lo?
+# Why do we want to make it?
 <div class="fragment text-left">
 
-- Fornecer um código **fácil de usar**
+- Provide an **easy-to-use** codebase
 </div>
 <div class="fragment text-left">
 
-- Determinar as **posições espaciais** de **múltiplos** grãos
+- Determine the **spatial positions** of **multiple** grains
 </div>
 <div class="fragment text-left">
 
-- Facilitar a criação de **dados sintéticos**
+- Facilitate the creation of **synthetic data**
 </div>
 <div class="fragment text-left">
 
-- Propor um **formato padrão de dados**
+- Propose a **standard data format** for magnetic microscopy
 </div>
 <div class="fragment text-left">
 
-- Servir como **base** para desenvolvimento de novos métodos
+- Serve as a **foundation** for developing new methods
 </div>
 <div class="fragment text-left">
 
-- Explorar o potencial de estudos emergentes em **microscopia magnética**
+- Explore the potential of emerging studies in **magnetic microscopy**
 </div>
 
 ===============================================================================
@@ -234,22 +234,20 @@ Magali
 
 <div class="large fragment">
 
-Biblioteca em Python <br><i class="fab fa-python"></i>
-
-</div>
-
-<div class="large fragment">
-
-Software livre e de código aberto  
+Free and open-source software  
 
 <i class="fab fa-github"></i> <i class="fas fa-lock-open"></i> <i class="fab fa-osi"></i>
 
 </div>
+<div class="large fragment">
 
+Python library <br><i class="fab fa-python"></i>
+
+</div>
 </div>
 <div class="large fragment">
 
-Modelagem e processamento de dados de microscopia magnética  
+Modeling and processing magnetic microscopy data  
 <i class="fas fa-magnet"></i> <i class="fas fa-microscope"></i>
 
 </div>
