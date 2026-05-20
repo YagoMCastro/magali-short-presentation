@@ -13,30 +13,31 @@ The reveal.js configuration can be found in index.html
 
 <h1 id="talk-title">
   
-Magali: uma ferramenta aberta para a comunidade de microscopia
-magnética
+Magali: open software for inversion and analysis of magnetic microscopy data🧲🔬
 
 </h1>
 <p id="talk-authors">
   <a id="talk-speaker"><b>Yago Moreira Castro</b></a>,
-  Leonardo Uieda
+  Leonardo Uieda,
+  Gelson Ferreira de Souza-Junior
 </p>
 
 <!-- Place location and date side-by-side with affiliation logos -->
 <div class="row talk-info">
 <div class="col-large">
 
+
 <i class="fa fa-calendar-alt" style="margin: 0 10px 0 0"></i>
-05 de Março  de 2025
+22 of May 2026
 <span style="margin: 0 20px"></span>
-Defesa de Mestrado em Geofísica | São Paulo, Brasil
+<!-- $8^{th}$ Biennial LATINMAG Meeti, Mexico -->
 
 <!-- Permission to reuse and CC-BY license logo -->
 <i class="fa fa-camera" style="margin: 0 10px 0 0"></i>
-Sinta-se à vontade para fotografar/compartilhar/reutilizar esta apresentação
-
+Feel free to screenshot/share/reuse this presentation
 <span style="margin: 0 20px"></span>
 <a href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by" style="margin: 0 10px 0 2px"></i>CC-BY 4.0 License</a>
+
 
 </div>
 <div class="col-medium">
@@ -51,23 +52,6 @@ Sinta-se à vontade para fotografar/compartilhar/reutilizar esta apresentação
 </div>
 </div>
 </div>
-
-===============================================================================
-# Sumário
-<ul style="list-style: none">
-  <li  style="color: red !important;"><b>Paleomagnetismo</b></li>
-  <li><b>Microscopia magnética</b></li>
-  <li>
-    <b>Métodos</b>
-    <ul style="list-style: none">
-      <li>Fundamentação Teórica</li>
-      <li>Desenvolvimento de software</li>
-    </ul>
-  </li>
-  <li><b>Comparação de Performance e Acurácia</b></li>  
-  <li><b>Demonstração em dados reais de microscopia magnética</b></li>
-  <li><b>Conclusões</b></li>
-</ul>
 
 ===============================================================================
 # O que é Paleomagnetismo?
@@ -149,24 +133,6 @@ Aplicação de medições magnéticas de minerais de rochas para resolver proble
 <div class="r-stretch">
   <img src="assets/arrow.svg" height=100%>
 </div>
-
-===============================================================================
-# Sumário
-
-<ul style="list-style: none">
-  <li><b>Paleomagnetismo</b></li>
-  <li style="color: red !important;"><b>Microscopia magnética</b></li>
-  <li>
-    <b>Métodos</b>
-    <ul style="list-style: none">
-      <li>Fundamentação Teórica</li>
-      <li>Desenvolvimento de software</li>
-    </ul>
-  </li>
-  <li><b>Comparação de Performance e Acurácia</b></li>  
-  <li><b>Demonstração em dados reais de microscopia magnética</b></li>
-  <li><b>Conclusões</b></li>
-</ul>
 
 ===============================================================================
 # Quantum Diamond Microscope
@@ -355,23 +321,6 @@ Modelagem e processamento de dados de microscopia magnética
 <i class="fas fa-magnet"></i> <i class="fas fa-microscope"></i>
 
 </div>
-
-===============================================================================
-# Sumário
-<ul style="list-style: none">
-  <li><b>Paleomagnetismo</b></li>
-  <li><b>Microscopia magnética</b></li>
-  <li style="color: red !important;">
-    <b>Métodos</b>
-    <ul style="list-style: none">
-      <li>Fundamentação Teórica</li>
-      <li>Desenvolvimento de software</li>
-    </ul>
-  </li>
-  <li><b>Comparação de Performance e Acurácia</b></li>  
-  <li><b>Demonstração em dados reais de microscopia magnética</b></li>
-  <li><b>Conclusões</b></li>
-</ul>
 
 ===============================================================================
 <h2>Etapa 1: Detecção da Fonte</h2>
@@ -1128,23 +1077,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
   aplicar as etapas 1 e 2 ao conjunto de dados residual
 </p>
 
-===============================================================================
-# Sumário
-
-<ul style="list-style: none">
-  <li><b>Paleomagnetismo</b></li>
-  <li><b>Microscopia magnética</b></li>
-  <li>
-    <b>Métodos</b>
-    <ul style="list-style: none">
-      <li>Fundamentação Teórica</li>
-      <li  style="color: red !important;">Desenvolvimento de software</li>
-    </ul>
-  </li>
-  <li><b>Comparação de Performance e Acurácia</b></li>  
-  <li><b>Demonstração em dados reais de microscopia magnética</b></li>
-  <li><b>Conclusões</b></li>
-</ul>
 
 ===============================================================================
 <!-- .slide: data-background-opacity="1" data-background-image="assets/fatiando-website.png"  data-background-size="contain" data-background-color="#262626" -->
@@ -1218,27 +1150,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 
 ===============================================================================
 <!-- .slide: data-background-opacity="1" data-background-image="assets/checks.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-
-
-
-
-# Sumário
-<ul style="list-style: none">
-  <li><b>Paleomagnetismo</b></li>
-  <li><b>Microscopia magnética</b></li>
-  <li>
-    <b>Métodos</b>
-    <ul style="list-style: none">
-      <li>Fundamentação Teórica</li>
-      <li>Desenvolvimento de software</li>
-    </ul>
-  </li>
-  <li style="color: red !important;"><b>Comparação de Performance e Acurácia</b></li>  
-  <li><b>Demonstração em dados reais de microscopia magnética</b></li>
-  <li><b>Conclusões</b></li>
-</ul>
 
 ===============================================================================
 # Comparação de Performance e Acurácia
@@ -1460,25 +1371,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 <div class="col-medium"><img src="assets/percentage_of_improvement_angular_error.png" style="width: 100%" ></div>
 </div>
-
-===============================================================================
-# Sumário
-
-<ul style="list-style: none">
-  <li><b>Paleomagnetismo</b></li>
-  <li><b>Microscopia magnética</b></li>
-  <li>
-    <b>Métodos</b>
-    <ul style="list-style: none">
-      <li>Análise do Fluxo de Trabalho</li>
-      <li>Fundamentação Teórica</li>
-      <li>Desenvolvimento de software</li>
-    </ul>
-  </li>
-  <li><b>Comparação de Performance e Acurácia</b></li>  
-  <li  style="color: red !important;"><b>Demonstração em dados reais de microscopia magnética</b></li>
-  <li><b>Conclusões</b></li>
-</ul>
 
 ===============================================================================
 <!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
@@ -1846,24 +1738,6 @@ Attributes:
 
 [Amostra e caracterização: Moncinhatto et al. (2019)](https://academic.oup.com/gji/article/220/2/821/5603748)
 </div>
-
-===============================================================================
-# Sumário
-
-<ul style="list-style: none">
-  <li><b>Paleomagnetismo</b></li>
-  <li><b>Microscopia magnética</b></li>
-  <li>
-    <b>Métodos</b>
-    <ul style="list-style: none">
-      <li>Fundamentação Teórica</li>
-      <li>Desenvolvimento de software</li>
-    </ul>
-  </li>
-  <li><b>Comparação de Performance e Acurácia</b></li>  
-  <li><b>Demonstração em dados reais de microscopia magnética</b></li>
-  <li style="color: red !important;"><b>Conclusões</b></li>
-</ul>
 
 ===============================================================================
 <div class="text-left fragment">
