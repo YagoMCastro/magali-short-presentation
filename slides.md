@@ -66,15 +66,6 @@ Application of magnetic measurements of rock minerals to solve geological proble
 </div>
 
 ===============================================================================
-# How are minerals magnetized?
-
-- <!-- .element: class="fragment" -->
-  - **Thermal Remanent Magnetization (TRM):** igneous rocks record the magnetic field as they cool below the Curie temperature (e.g., pure magnetite: **580°C**)
-
-- <!-- .element: class="fragment" -->
-  - **Depositional Remanent Magnetization (DRM):** magnetic particles in sediments align with the Earth's magnetic field during deposition in aquatic environments
-
-===============================================================================
 # Why is paleomagnetism important?
 
 - <!-- .element: class="fragment" -->
