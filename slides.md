@@ -1079,7 +1079,6 @@ $$\mathbf{A}^T\mathbf{A}\mathbf{m} = \mathbf{A}^T\mathbf{d}^{o}$$
 </div>
 
 ===============================================================================
-
 # Hybrid Inversion
 
 <ul>
@@ -1105,7 +1104,6 @@ $$\mathbf{A}^T\mathbf{A}\mathbf{m} = \mathbf{A}^T\mathbf{d}^{o}$$
 </ul>
 
 ===============================================================================
-
 # Optimization via Levenberg-Marquardt
 
 <div class="fragment text-left">
@@ -1127,7 +1125,6 @@ $$\Psi(\mathbf{v}) = \| \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \|^2$$
 </div>
 
 ===============================================================================
-
 # Hybrid Inversion
 
 <div class="fragment text-left">
@@ -1144,7 +1141,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 ===============================================================================
-
 # Marquardt Parameter
 
 <div class="text-left">
@@ -1156,7 +1152,6 @@ $$\alpha = S \cdot \text{median}(\text{diag}(\mathbf{J}^T\mathbf{J})) \quad \tex
 </div>
 
 ===============================================================================
-
 $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \mathbf{J}) \right) \Delta\mathbf{v} = \mathbf{J}^T \big( \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \big)$$
 
 <div class="fragment text-left">
@@ -1170,7 +1165,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 ===============================================================================
-
 # Stability
 
 <div class="text-left">
@@ -1257,95 +1251,48 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 ===============================================================================
 <!-- .slide: data-background-opacity="1" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808f5" -->
 
-
-
 ===============================================================================
 # Performance and Accuracy Comparison
 
-<div class="text-left">
-
-- We evaluated **Magali** against the nonlinear inversion algorithm of **Souza-Junior et al. (2025)**.
-
-</div>
-
-<div class="fragment text-left">
-
-- **We ensured fair conditions:** both methods start from the **same initial estimate** using Euler Deconvolution ($\eta=3$), and the **background level is removed beforehand**. The methods were executed on a laptop with a **Ryzen 3** processor and **8 GB RAM**
-
-</div>
-
-<div class="fragment text-left">
-
-- We **quantified** performance as a function of the number of data points ($N$) by performing **5 independent inversions** per resolution to obtain stable measurements
-
-</div>
-
-
-===============================================================================
-
-- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Simple Model:** A single isolated dipole
-
-2. **"1-Interf." Model:** A target dipole + a nearby interfering source
-
-===============================================================================
-
 <div class="row">
-<div class="col-medium"><img src="assets/simple-model.png" style="width: 100%">Spacing: $2 \mu m$</div>
-<div class="col-medium"><img src="assets/one-interf.png" style="width: 100%">Spacing: $2 \mu m$</div>
+<div class="col">
+<div class="fragment text-center">
+<ul class="fragment text-left">
+
+  <li><b>Magali</b> vs. <b>Souza-Junior et al. (2025)</b></li>
+  <li>Same initial estimate (Euler Deconvolution, $\eta=3$)</li>
+  <li>Ryzen 3, 8 GB RAM — 5 inversions per resolution</li>
+<ul>
+</div>
+<div class="fragment text-center">
+Two synthetic scenarios ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
+
+1. **Simple:** single isolated dipole
+2. **1-Interf.:** target dipole + nearby interfering source
 </div>
 
 ===============================================================================
-
-
-<div class="row">
-<div class="col-medium"><img src="assets/simple-model-1.png" style="width: 100%">Spacing: $1 \mu m$</div>
-<div class="col-medium"><img src="assets/one-interf-1.png" style="width: 100%">Spacing: $1 \mu m$</div>
-</div>
-
-===============================================================================
-
-
 <div class="row">
 <div class="col-medium"><img src="assets/simple-model-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
 <div class="col-medium"><img src="assets/one-interf-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
 </div>
 
 ===============================================================================
-
+# Location Error
 <div class="row">
-<div class="col">
-
-- **Simple:** 
-
-  - **Souza-Junior et al. (2025):** maintains an almost constant error, lower than **Magali**, and below **0.2 μm**
-  
-  - **Magali:** increases as data density grows and **stabilizes** at an error of approximately **~0.6 μm** for high point densities
-
+<div class="col-medium"><img src="assets/location-simple.png" style="width: 102%" >Simple: ~600% higher</div>
+<div class="col-medium"><img src="assets/location-one-interf.png" style="width: 102%" >1-Interf.: ~275% lower</div>
 </div>
 
-<div class="col-medium"><img src="assets/location-simple.png" style="width: 100%" ></div>
+
+===============================================================================
+# Intensity Error
+<div class="row">
+<div class="col-medium"><img src="assets/intensity_simple.png" style="width: 100%" >Simple: ~90% lower</div>
+<div class="col-medium"><img src="assets/intensity_one_interf.png" style="width: 100%" >1-Interf.: ~80% higher</div>
 </div>
 
 ===============================================================================
-
-<div class="row">
-<div class="col">
-
-- **1-Interf.:** 
-
-  - **Souza-Junior et al. (2025):** maintains an almost constant error slightly above **2 μm** 
- 
-  - **Magali:** improves as $N$ increases, reaching values below **1 μm**
-
-</div>
-
-<div class="col-medium"><img src="assets/location-one-interf.png" style="width: 100%" ></div>
-</div>
-
-===============================================================================
-
 <div class="row">
 <div class="col">
 
@@ -1358,7 +1305,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 ===============================================================================
-
 <div class="row">
 <div class="col">
 
@@ -1372,7 +1318,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 ===============================================================================
-
 <div class="row">
 <div class="col">
 
@@ -1386,7 +1331,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 ===============================================================================
-
 <div class="row">
 <div class="col">
 
@@ -1400,26 +1344,18 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 ===============================================================================
+# Conclusions
 
-<div class="text-left fragment">
 
-- **Magnetic microscopy** enabled **grain-scale paleomagnetism**
-</div>
+- Magnetic microscopy enabled **grain-scale** paleomagnetism
 
-<div class="text-left fragment">
+- Existing codes are **paper-specific** and lack **reproducibility**
 
-- Codes from the literature are usually developed for the **specific scope of each paper** and do not follow common **reproducibility** practices
-</div>
+- No **free, standardized software** exists for inversion of these data
 
-<div class="text-left fragment">
 
-- There is no **free, organized, and standardized software** for inversion of these data
-</div>
-
-<div class="fragment">
-
-**Consequence:** difficulty in comparison, validation, and collective advancement
-</div>
+- <!-- .element: class="fragment" -->
+  **Consequence:** difficulty in comparison, validation, and collective advancement
 
 ===============================================================================
 # We achieved
@@ -1429,12 +1365,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 Implementation of the **complete workflow** of Souza-Junior et al. (2025) with the methodological advancement of **hybrid inversion**, which uses **analytical derivatives**, avoiding **normalization** and **extensive search**, within an **open-source** library
 
 </div>
-
-===============================================================================
-
-- Execution time below 1 second with an **efficiency gain > 90%**
-
-- Angular error reduction of **> 60%** for the simple model and **> 40%** for the 1-interf model
 
 ===============================================================================
 
@@ -1448,7 +1378,6 @@ Implementation of the **complete workflow** of Souza-Junior et al. (2025) with t
 # Acknowledgements
 
 <img src="assets/capes.png" height=100%>
-
 
 ===============================================================================
 <!-- .slide: data-background-opacity="0.2" data-background-image="assets/magali-logo.png"  data-background-size="contain" data-background-color="#262626" -->
