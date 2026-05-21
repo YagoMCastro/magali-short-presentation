@@ -66,38 +66,6 @@ Application of magnetic measurements of rock minerals to solve geological proble
 </div>
 
 ===============================================================================
-# Why is paleomagnetism important?
-
-- <!-- .element: class="fragment" -->
-  - **Geomagnetic reversals** show that the Earth's magnetic field has **reversed polarity** many times throughout its history
-
-- <!-- .element: class="fragment" -->
-  - Helped confirm the theory of **continental drift** and reconstruct past **positions** of the continents
-
-- <!-- .element: class="fragment" -->
-  - Used as a **relative dating** tool by comparing rock records with the known timescale of magnetic reversals **(magnetostratigraphy)**
-
-- <!-- .element: class="fragment" -->
-  - Makes it possible to understand how the Earth's **magnetic field** has **evolved** over hundreds of millions of years
-
-===============================================================================
-# Limitations of Paleomagnetism
-<div class="text-left fragment">
-
-- Overprinting by **secondary magnetizations** and the impossibility of **separating signals** from different minerals **without altering** sample properties (e.g., magnetite vs. hematite)
-</div>
-
-<div class="text-left fragment">
-
-- Samples with **very weak signals** cannot overcome the background noise of conventional magnetometers
-</div>
-
-<div class="text-left fragment">
-
-- Several methods **alter the sample**, either by modifying or destroying its magnetization
-</div>
-
-===============================================================================
 <div class="r-stretch">
   <img src="assets/sample.svg" height=100%>
 </div>
@@ -108,16 +76,26 @@ Application of magnetic measurements of rock minerals to solve geological proble
 </div>
 
 ===============================================================================
+- <!-- .element: class="fragment" -->
+  - Minerals record the field via TRM (cooling) or DRM (deposition)
+
+- <!-- .element: class="fragment" -->
+  - Reveals geomagnetic reversals, continental drift, and field evolution
+
+- <!-- .element: class="fragment" -->
+  - Limited by signal overlap, weak sources, and sample alteration → motivates magnetic microscopy
+
+===============================================================================
 # Quantum Diamond Microscope
 
 <div class="text-left fragment">
 
-- **The Data:** the QDM generates **magnetic field maps** of the sample's surface with **micrometric** spatial resolution at room temperature.
+- QDM generates **magnetic field maps** of the sample's surface with **micrometric** spatial resolution at room temperature
 </div>
 
 <div class="text-left fragment">
 
-- **The Algorithmic Challenge:** the input is a dense N-dimensional grid with thousands of overlapping anomalous dipole sources. The desired output is the spatial positions ($x, y, z$) and magnetic moments ($m_x, m_y, m_z$) of each individual particle.
+- **The Algorithmic Challenge:** the input is a dense N-dimensional grid with thousands of overlapping anomalous dipole sources
 
 </div>
 
@@ -456,7 +434,7 @@ Attributes:
 <span class="fragment code">        .assign_coords(z=datasets[name].z + height_difference)</span>
 <span class="fragment code">        .rename("bz")</span>
 <span class="fragment code">    )</span>
-<span class="fragment code">    # Calcule data derivatives and TGA, which enhances the signals close to the source</span>
+<span class="fragment code">    # Calculate data derivatives and TGA, which enhances the signals close to the source</span>
 <span class="fragment code">    data_tga = mg.total_gradient_amplitude_grid(data_up)</span>
 
 ===============================================================================
@@ -537,9 +515,14 @@ $$||\vec{\mathbf{\nabla}}f(x, y, z)|| = \sqrt{(\partial_x f)^2 + (\partial_y f)^
 ===============================================================================
 # Contrast Stretching
 
-- **Objective**: rescale TGA values to highlight weak and strong signals  
-- **Operation**: pixel-wise transformation to normalize the data:
+<div class="text-center fragment">
 
+  - Rescale TGA values to highlight **weak** and **strong** signals  
+</div>
+<div class="text-center fragment">
+
+<ul>
+  <li> Pixel-wise transformation to normalize the data:
 <p>
 \[
 \text{TGA}_{\text{rescaled}} = 2 \left( \frac{\text{TGA} - v_{\min}}{v_{\max} - v_{\min}} \right) - 1
@@ -547,10 +530,15 @@ $$||\vec{\mathbf{\nabla}}f(x, y, z)|| = \sqrt{(\partial_x f)^2 + (\partial_y f)^
 </p>
 
 <ul>
-<li>$ v_{\text{min}} = 1^\text{st} $ percentile</li>
-<li>$ v_{\text{max}} = 99^\text{th} $ percentile</li>
-<li><b>Output:</b> rescaled values in the range $[-1, 1]$</li>
+  <li>$ v_{\text{min}} = 1^\text{st} $ percentile</li>
+  <li>$ v_{\text{max}} = 99^\text{th} $ percentile</li>
+  <p><b>Output:</b> rescaled values in the range $[-1, 1]$</p>
 </ul>
+
+</div>
+
+- <!-- .element: class="fragment" -->
+
 
 ===============================================================================
 <!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
@@ -634,32 +622,49 @@ $$||\vec{\mathbf{\nabla}}f(x, y, z)|| = \sqrt{(\partial_x f)^2 + (\partial_y f)^
 </section>
 
 ===============================================================================
+
 # LoG Filter
 
-<div class="text-left">
 
-- We first **smooth** the image with a Gaussian kernel to **eliminate high-frequency noise**:
+<div class="text-left fragment">
+<ul>
+  <li> Smooth with a Gaussian kernel to remove high-frequency noise:
 
-$$G(x, y; \sigma) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
+  $$G(x, y; \sigma) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
 
-- $\sigma$: scale parameter
+  <ul>
+    <li>$\sigma$: scale parameter</li>
+  </ul>
+  </li>
+<ul>
+</div>
 
-<div class="footnote-center">
+</div>
+
+
+<div class="footnote-center fragment">
 
 A **kernel** acts as a filter that is convolved with the image
 </div>
-</div>
+
 
 ===============================================================================
 
 # LoG Filter
 
+
 <div class="text-left">
+
+- Smooth with a Gaussian kernel to remove high-frequency noise:
+
+$$G(x, y; \sigma) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
+</div>
+
+<div class="text-center">
 
 - We apply the **Laplacian** operator (sum of second-order derivatives) to highlight regions of **rapid variation**:
 
 $$\nabla \cdot \nabla G(x, y; \sigma) = \frac{x^2 + y^2 - 2\sigma^2}{2\pi\sigma^4} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
-
 </div>
 
 ===============================================================================
@@ -821,7 +826,7 @@ $$\mathbf{Gp=h}$$
 </div>
 
 ===============================================================================
-# Solução por mínimos quadrados
+# Least-Squares Estimation
 
 $$
 \mathbf{G} \mathbf{p} = \mathbf{h}
@@ -844,7 +849,7 @@ $$
 </div>
 
 ===============================================================================
-# Solução por mínimos quadrados
+# Least-Squares Estimation
 
 $$
 \mathbf{G} \mathbf{p} = \mathbf{h}
@@ -1226,12 +1231,9 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 <!-- .slide: data-background-opacity="1" data-background-image="assets/documentation-tutorial.png"  data-background-size="contain" data-background-color="#262626" -->
 
 ===============================================================================
-# Robustness and CI/CD Pipeline
-<div class="fragment text-left">
+# Continuous Integration
 
-- **Continuous Integration (CI):** we implemented an automated pipeline that runs our **unit tests** on every *commit*, ensuring **100% coverage** of the functions included in the package
-
-</div>
+- 100% unit test coverage on every commit
 
 ===============================================================================
 <!-- .slide: data-background-opacity="1" data-background-image="assets/test.png"  data-background-size="contain" data-background-color="#262626" -->
@@ -1255,6 +1257,8 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 ===============================================================================
 <!-- .slide: data-background-opacity="1" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808f5" -->
 
+
+
 ===============================================================================
 # Performance and Accuracy Comparison
 
@@ -1276,52 +1280,8 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 
 </div>
 
-===============================================================================
-
-<div class="row">
-<div class="col">
-
-- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Simple Model:** A single isolated dipole
-
-</div>
-
-<div class="col-medium"><img src="assets/simple-model.png" style="width: 100%" >Spacing: $2 \mu m$</div>
-</div>
 
 ===============================================================================
-
-<div class="row">
-<div class="col">
-
-- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Simple Model:** A single isolated dipole
-
-</div>
-
-<div class="col-medium"><img src="assets/simple-model-1.png" style="width: 100%" > Spacing: $1 \mu m$</div>
-</div>
-
-===============================================================================
-
-<div class="row">
-<div class="col">
-
-- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Simple Model:** A single isolated dipole
-
-</div>
-
-<div class="col-medium"><img src="assets/simple-model-2.png" style="width: 100%" > Spacing: $0.3 \mu m$</div>
-</div>
-
-===============================================================================
-
-<div class="row">
-<div class="col">
 
 - We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
 
@@ -1329,40 +1289,26 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 
 2. **"1-Interf." Model:** A target dipole + a nearby interfering source
 
-</div>
+===============================================================================
 
-<div class="col-medium"><img src="assets/one-interf.png" style="width: 100%"> Spacing: $2 \mu m$</div>
+<div class="row">
+<div class="col-medium"><img src="assets/simple-model.png" style="width: 100%">Spacing: $2 \mu m$</div>
+<div class="col-medium"><img src="assets/one-interf.png" style="width: 100%">Spacing: $2 \mu m$</div>
 </div>
 
 ===============================================================================
 
+
 <div class="row">
-<div class="col">
-
-- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Simple Model:** A single isolated dipole
-
-2. **"1-Interf." Model:** A target dipole + a nearby interfering source
-
-</div>
-
+<div class="col-medium"><img src="assets/simple-model-1.png" style="width: 100%">Spacing: $1 \mu m$</div>
 <div class="col-medium"><img src="assets/one-interf-1.png" style="width: 100%">Spacing: $1 \mu m$</div>
 </div>
 
 ===============================================================================
 
+
 <div class="row">
-<div class="col">
-
-- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Simple Model:** A single isolated dipole
-
-2. **"1-Interf." Model:** A target dipole + a nearby interfering source
-
-</div>
-
+<div class="col-medium"><img src="assets/simple-model-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
 <div class="col-medium"><img src="assets/one-interf-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
 </div>
 
@@ -1430,19 +1376,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 <div class="row">
 <div class="col">
 
-- **Souza-Junior et al. (2025):** execution time **grows linearly** with the increase in the number of data points ($N$)
-
-- **Magali:** maintains stable execution times below **0.5 seconds**
-</div>
-
-<div class="col-medium"><img src="assets/execution_time_comparison.png" style="width: 100%" ></div>
-</div>
-
-===============================================================================
-
-<div class="row">
-<div class="col">
-
 - **1-Interf.:** approximately **90% improvement** for all data sizes
 
 - **Simple:** improvement almost always greater than **60%**, exceeding **90%** in scenarios with more than **5,000 points**
@@ -1450,36 +1383,6 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 <div class="col-medium"><img src="assets/percentage_of_improvement_execution_time.png" style="width: 100%" ></div>
-</div>
-
-===============================================================================
-
-<div class="row">
-<div class="col">
-
-- **Simple:**
-  - **Souza-Junior et al. (2025):** remains constant at approximately **~1 degree**
-
-  - **Magali:** starts at a value similar to Souza-Junior et al. (2025) and decreases as point density increases, reaching approximately **~0.4 degree**
-
-</div>
-
-<div class="col-medium"><img src="assets/angular_error_simple.png" style="width: 100%" ></div>
-</div>
-
-===============================================================================
-
-<div class="row">
-<div class="col">
-
-- **1-Interf.:**
-  - **Souza-Junior et al. (2025):** remains nearly constant at **12 degrees**, regardless of data volume
-
-  - **Magali:** decreases as $N$ increases, approaching **6 degrees**
-
-</div>
-
-<div class="col-medium"><img src="assets/angular_error_one_interf.png" style="width: 100%" ></div>
 </div>
 
 ===============================================================================
