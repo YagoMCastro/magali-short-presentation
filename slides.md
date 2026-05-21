@@ -428,6 +428,138 @@ Attributes:
 </code></pre>
 </section>
 
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment-code {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    line-height: 0.2em;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span>
+<span class="code">for name in ["speleothem", "ceramic", "basalt"]:</span>
+<span style="margin-top: +0.5em !important;"  class="fragment code">     # Use Magali to load the data in Matlab Harvard QDM format</span>
+<span class="fragment code">    datasets[name] = mg.read_qdm_harvard(data_paths[name])</span>
+<span class="fragment code">    # Upward continue the data 5 micrometers using Harmonica</span>
+<span class="fragment code">    height_difference = 5</span>
+<span class="fragment code">    data_up = (</span>
+<span class="fragment code">        hm.upward_continuation(datasets[name], height_difference)</span>
+<span class="fragment code">        .assign_attrs(datasets[name].attrs)</span>
+<span class="fragment code">        .assign_coords(x=datasets[name].x, y=datasets[name].y)</span>
+<span class="fragment code">        .assign_coords(z=datasets[name].z + height_difference)</span>
+<span class="fragment code">        .rename("bz")</span>
+<span class="fragment code">    )</span>
+<span class="fragment code">    # Calcule data derivatives and TGA, which enhances the signals close to the source</span>
+<span class="fragment code">    data_tga = mg.total_gradient_amplitude_grid(data_up)</span>
+
+===============================================================================
+# Derivatives and TGA
+
+<div class="text-left">
+
+- The **Total Gradient Amplitude (TGA)** of a harmonic function (which may represent the magnetic field) is calculated as the norm of the gradient vector:
+
+$$||\vec{\mathbf{\nabla}}f(x, y, z)|| = \sqrt{(\partial_x f)^2 + (\partial_y f)^2 + (\partial_z f)^2}$$
+
+</div>
+
+<div class="footnote-center">
+
+[Blakely (1995)](https://www.cambridge.org/core/books/potential-theory-in-gravity-and-magnetic-applications/348880F23008E16E663D6AD14A41D8DE)
+</div>
+
+===============================================================================
+
+# Advantages of TGA
+
+<div class="text-left fragment">
+
+- Produces **strictly positive** values
+</div>
+
+<div class="text-left fragment">
+
+- **Centers** peaks directly over the **magnetic sources**
+</div>
+
+<div class="text-left fragment">
+
+- **Minimizes** dependence on the original **magnetization direction**
+</div>
+
+<div class="text-left fragment">
+
+- Acts as a **high-pass** filter, removing **long-wavelength** noise
+</div>
+
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment-code {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    line-height: 0.2em;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span>
+<span class="fragment code">    # Stretch TGA contrast to enhance signals from weak soures</span>
+<span class="fragment code">    data_stretched = skimage.exposure.rescale_intensity(</span>
+<span class="fragment code">        data_tga,</span>
+<span class="fragment code">        in_range=tuple(np.percentile(data_tga, (1, 99))),</span>
+<span class="fragment code">    )</span>
+</code></pre>
+</section>
+
+
+
+===============================================================================
+# Contrast Stretching
+
+- **Objective**: rescale TGA values to highlight weak and strong signals  
+- **Operation**: pixel-wise transformation to normalize the data:
+
+<p>
+\[
+\text{TGA}_{\text{rescaled}} = 2 \left( \frac{\text{TGA} - v_{\min}}{v_{\max} - v_{\min}} \right) - 1
+\]
+</p>
+
+<ul>
+<li>$ v_{\text{min}} = 1^\text{st} $ percentile</li>
+<li>$ v_{\text{max}} = 99^\text{th} $ percentile</li>
+<li><b>Output:</b> rescaled values in the range $[-1, 1]$</li>
+</ul>
 
 ===============================================================================
 <!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
@@ -455,24 +587,24 @@ Attributes:
 <pre class="compact"><code class="python" data-trim data-noescape>
 <span>
 <span class="code">for name in ["speleothem", "ceramic", "basalt"]:</span>
-<span style="margin-top: +0.5em !important;"  class="fragment code">    # Use o Magali para carregar os dados do formato de arquivo QDM Matlab de Harvard</span>
-<span class="fragment code">    datasets[name] = mg.read_qdm_harvard(data_paths[name])</span>
-<span class="fragment code">    # Upward continue the data 5 micrometers using Harmonica</span>
-<span class="fragment code">    height_difference = 5</span>
-<span class="fragment code">    data_up = (</span>
-<span class="fragment code">        hm.upward_continuation(datasets[name], height_difference)</span>
-<span class="fragment code">        .assign_attrs(datasets[name].attrs)</span>
-<span class="fragment code">        .assign_coords(x=datasets[name].x, y=datasets[name].y)</span>
-<span class="fragment code">        .assign_coords(z=datasets[name].z + height_difference)</span>
-<span class="fragment code">        .rename("bz")</span>
-<span class="fragment code">    )</span>
-<span class="fragment code">    # Calcule data derivatives and TGA</span>
-<span class="fragment code">    data_tga = mg.total_gradient_amplitude_grid(data_up)</span>
-<span class="fragment code">    # Stretch TGA contrast to enhance signals from weak soures</span>
-<span class="fragment code">    data_stretched = skimage.exposure.rescale_intensity(</span>
-<span class="fragment code">        data_tga,</span>
-<span class="fragment code">        in_range=tuple(np.percentile(data_tga, (1, 99))),</span>
-<span class="fragment code">    )</span>
+<span style="margin-top: +0.5em !important;"  class="code">     # Use Magali to load the data in Matlab Harvard QDM format</span>
+<span class="code">    datasets[name] = mg.read_qdm_harvard(data_paths[name])</span>
+<span class="code">    # Upward continue the data 5 micrometers using Harmonica</span>
+<span class="code">    height_difference = 5</span>
+<span class="code">    data_up = (</span>
+<span class="code">        hm.upward_continuation(datasets[name], height_difference)</span>
+<span class="code">        .assign_attrs(datasets[name].attrs)</span>
+<span class="code">        .assign_coords(x=datasets[name].x, y=datasets[name].y)</span>
+<span class="code">        .assign_coords(z=datasets[name].z + height_difference)</span>
+<span class="code">        .rename("bz")</span>
+<span class="code">    )</span>
+<span class="code">    # Calculate data derivatives and TGA, which enhances the signals close to the source</span>
+<span class="code">    data_tga = mg.total_gradient_amplitude_grid(data_up)</span>
+<span class="code">    # Stretch TGA contrast to enhance signals from weak soures</span>
+<span class="code">    data_stretched = skimage.exposure.rescale_intensity(</span>
+<span class="code">        data_tga,</span>
+<span class="code">        in_range=tuple(np.percentile(data_tga, (1, 99))),</span>
+<span class="code">    )</span>
 </code></pre>
 </section>
 
@@ -507,6 +639,62 @@ Attributes:
 <span class="fragment code">        detection_threshold=detection_thresholds[name],</span>
 <span class="fragment code">        border_exclusion=2,</span>
 <span class="fragment code">    )</span>
+</code></pre>
+</section>
+
+===============================================================================
+# LoG Filter
+
+<div class="text-left">
+
+- We first **smooth** the image with a Gaussian kernel to **eliminate high-frequency noise**:
+
+$$G(x, y; \sigma) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
+
+- $\sigma$: scale parameter
+
+<div class="footnote-center">
+
+A **kernel** acts as a filter that is convolved with the image
+</div>
+</div>
+
+===============================================================================
+
+# LoG Filter
+
+<div class="text-left">
+
+- We apply the **Laplacian** operator (sum of second-order derivatives) to highlight regions of **rapid variation**:
+
+$$\nabla \cdot \nabla G(x, y; \sigma) = \frac{x^2 + y^2 - 2\sigma^2}{2\pi\sigma^4} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
+
+</div>
+
+===============================================================================
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span>
 <span class="fragment code">    # Use nonlinear inversion to estimate dipolar moments and source locations</span>
 <span class="fragment code">    results = mg.iterative_nonlinear_inversion(</span>
 <span class="fragment code">        data_up, bounding_boxes[name], copy_data=True</span>
@@ -517,262 +705,21 @@ Attributes:
 </section>
 
 ===============================================================================
-
-<h2>Etapa 1: Detecção da Fonte</h2>
-  
-<p class="text-left">
-  <b>Objetivo:</b> isolar cada partícula magnética na imagem
-</p>
-
-<p class="text-left fragment">
-  <b>Métodos utilizados:</b>
-</p>
-
-<ul>
-  <li class="fragment">
-    <b>Continuação para cima:</b> atenua ruídos de alta frequência (filtro passa-baixa) e estabiliza o campo para o cálculo de gradientes 
-  </li>
-</ul>
-
-===============================================================================
-<div class="row">
-<div class="col"><img src="assets/qdm_data.png" style="width: 100%" ></div>
-<div class="col"><img src="assets/data_up.png" style="width: 100%" ></div>
-</div>
-
-Continuação para cima de $5 \mu m$
-
-===============================================================================
-<h2>Etapa 1: Detecção da Fonte</h2>
-  
-<p class="text-left">
-  <b>Objetivo:</b> isolar cada partícula magnética na imagem
-</p>
-
-<p class="text-left">
-  <b>Métodos utilizados:</b>
-</p>
-
-<ul>
-  <li >
-    <b>Continuação para cima:</b> atenua ruídos de alta frequência (filtro passa-baixa) e estabiliza o campo para o cálculo de gradientes 
-  </li>
-  <li>
-    <b>Amplitude do Gradiente Total (TGA):</b> realça o sinal próximo à fonte através de um filtro passa-alta
-  </li>
-</ul>
-
-===============================================================================
-# Derivadas e TGA
-<div class="text-left">
-
-- Calcula-se a **Amplitude do Gradiente Total (TGA)** de uma função harmônica (podendo ser o campo magnético) definida como a norma do vetor gradiente:
-
-$$||\vec{\mathbf{\nabla}}f(x, y, z)|| = \sqrt{(\partial_x f)^2 + (\partial_y f)^2 + (\partial_z f)^2}$$
-
-</div>
-
-<div class="footnote-center">
-
-[Blakely (1995)](https://www.cambridge.org/core/books/potential-theory-in-gravity-and-magnetic-applications/348880F23008E16E663D6AD14A41D8DE)
-</div>
-
-===============================================================================
-# Derivadas e TGA
-<div class="text-left">
-
-- No dado continuado para cima, **aproximam-se** as derivadas horizontais utilizando um esquema de **diferenças finitas centrais** de segunda ordem (assumindo espaçamento uniforme $\Delta x$ e $\Delta y$):
-
-$$\partial_x f(x, y, z) \approx \frac{f(x + \Delta x, y, z) - f(x - \Delta x, y, z)}{2 \Delta x}$$
-
-$$\partial_y f(x, y, z) \approx \frac{f(x, y + \Delta y, z) - f(x , y + \Delta y, z)}{2 \Delta y}$$
-
-</div>
-
-
-===============================================================================
-# Cálculo em Z
-<div class="text-left">
-
-- **Obtem-se** as variações no eixo vertical ($f(z + \Delta z)$ e $f(z - \Delta z)$) aplicando **continuação para cima** no dado original a uma altura abaixo e uma acima do anteriormente continuado
-
-</div>
-
-<div class="footnote-center">
-
-[Souza-Junior et al. (2025)](https://eartharxiv.org/repository/view/8869/)
-
-</div>
-
-===============================================================================
-# Vantagens do TGA
-
-<div class="text-left fragment">
-
-- Gera valores **estritamente positivos**
-</div>
-
-
-<div class="text-left fragment">
-
-- **Centraliza** os picos diretamente sobre as **fontes magnéticas**
-</div>
-
-
-<div class="text-left fragment">
-
-- **Minimiza** a dependência da **direção de magnetização** original
-</div>
-
-
-<div class="text-left fragment">
-
-- Atua como um filtro **passa-alta**, removendo ruídos de **longo comprimento de onda**
-</div>
-
-===============================================================================
-<div class="row">
-<div class="col"><img src="assets/data_up.png" style="width: 100%" ></div>
-<div class="col"><img src="assets/tga.png" style="width: 80%" ></div>
-</div>
-
-===============================================================================
-<h2>Etapa 1: Detecção da Fonte</h2>
-  
-<p class="text-left">
-  <b>Objetivo:</b> isolar cada partícula magnética na imagem
-</p>
-
-<p class="text-left">
-  <b>Métodos utilizados:</b>
-</p>
-
-<ul>
-  <li >
-    <b>Continuação para cima:</b> atenua ruídos de alta frequência (filtro passa-baixa) e estabiliza o campo para o cálculo de gradientes 
-  </li>
-  <li>
-    <b>Amplitude do Gradiente Total (TGA):</b> realça o sinal próximo à fonte através de um filtro passa-alta
-  </li>
-  <li>
-    <b>Realce de contraste:</b> utiliza percentis (1º a 99º) para destacar partículas de baixa intensidade
-  </li>
-</ul>
-
-===============================================================================
-# Realce de Contraste
-
-- **Objetivo**: reescalonar os valores de TGA para destacar sinais fracos e fortes 
-- **Operação**: transformação por pixel para normalizar os dados:
-
-<p>
-\[
-\text{TGA}_{\text{rescaled}} = 2 \left( \frac{\text{TGA} - v_{\min}}{v_{\max} - v_{\min}} \right) - 1
-\]
-</p>
-
-<ul>
-<li>$ v_{\text{min}} = 1^\text{º} $ percentil</li>
-<li>$ v_{\text{max}} = 99^\text{º} $ percentil</li>
-<li><b>Saída:</b> valores reescalados para o intervalo $[0, 1]$</li>
-</ul>
-
-===============================================================================
-<div class="row">
-  <div class="col">
-    <img src="assets/tga.png" style="width: 80%">
-  </div>
-  <div class="col">
-    <img src="assets/stretched.png" style="width: 100%">
-  </div>
-</div>
-
-
-===============================================================================
-<div class="row">
-<div class="col"><img src="assets/data_up.png" style="width: 100%" ></div>
-<div class="col"><img src="assets/stretched.png" style="width: 100%" ></div>
-</div>
-
-===============================================================================
-<h2>Etapa 1: Detecção da Fonte</h2>
-<p class="text-left">
-  <b>Objetivo:</b> isolar cada partícula magnética na imagem
-</p>
-
-<p class="text-left">
-  <b>Métodos utilizados:</b>
-</p>
-
-<ul>
-  <li >
-    <b>Continuação para cima:</b> atenua ruídos de alta frequência (filtro passa-baixa) e estabiliza o campo para o cálculo de gradientes 
-  </li>
-  <li>
-    <b>Amplitude do Gradiente Total (TGA):</b> realça o sinal próximo à fonte através de um filtro passa-alta
-  </li>
-  <li>
-    <b>Realce de contraste:</b> utiliza percentis (1º a 99º) para destacar partículas de baixa intensidade
-  </li>
-  <li>
-    <b>Segmentação LoG (Laplaciano do Gaussiano):</b> detecta “blobs” e define uma janela individual por partícula e as organiza por intensidade de sinal decrescente para o processamento iterativo
-  </li>
-</ul>
-
-
-===============================================================================
-# Filtro LoG
-<div class="text-left">
-
-- **Suavizamos** a imagem primeiro com um kernel Gaussiano para **eliminar ruídos de alta frequência**:
-
-$$G(x, y; \sigma) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
-
-- $\sigma$: parâmetro de escala
-
-<div class="footnote-center">
-
-**Kernel** funciona como um filtro que é convolvido com a imagem
-</div>
-</div>
-
-===============================================================================
-# Filtro LoG
+# Euler Deconvolution 
 
 <div class="text-left">
 
-- Aplicamos o operador **Laplaciano** (soma das derivadas de segunda ordem) para destacar zonas de **variação rápida**:
-
-$$\nabla \cdot \nabla G(x, y; \sigma) = \frac{x^2 + y^2 - 2\sigma^2}{2\pi\sigma^4} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
-
-</div>
-
-===============================================================================
-<div class="row">
-  <div class="col">
-    <img src="assets/stretched.png" style="width: 100%">
-  </div>
-  <div class="col">
-    <img src="assets/detection.png" style="width: 100%">
-  </div>
-</div>
-
-===============================================================================
-# Deconvolução de Euler
-
-<div class="text-left">
-
-- É um método baseado na equação de homogeneidade de Euler para estimar a <b>localização</b> e a <b>profundidade</b> de fontes magnéticas
+- It is a method based on Euler’s homogeneity equation to estimate the <b>location</b> and <b>depth</b> of magnetic sources
 </div>
 
 <div class="text-left fragment">
 
-- Para este método assume-se um modelo de **fonte dipolar**</li>
+- This method assumes a **dipolar source** model
 
 </div>
 
 ===============================================================================
-# Equação de Homogeneidade de Euler
+# Euler’s Homogeneity Equation
 
 $$
 (\mathbf{x}-\mathbf{v})\cdot \nabla f = (b-f)\eta
@@ -780,11 +727,11 @@ $$
 
 <div class="text-left">
 <ul>
-  <li class="fragment">$\mathbf{x}=[x,y,z]^T$ : coordenadas dos dados</li>
-  <li class="fragment">$\mathbf{v}=[x_c,y_c,z_c]^T$ : coordenadas da fonte do campo magnético</li>
-  <li class="fragment">$f$ : função homogênea (ex.: $b_z$)</li>
-  <li class="fragment">$b$ : nível de base (deslocamento constante do sinal)</li>
-  <li class="fragment">$\eta$ : índice estrutural ($\eta=3$ para dipolos)</li>
+  <li class="fragment">$\mathbf{x}=[x,y,z]^T$ : data coordinates</li>
+  <li class="fragment">$\mathbf{v}=[x_c,y_c,z_c]^T$ : magnetic source coordinates</li>
+  <li class="fragment">$f$ : homogeneous function (e.g., $b_z$)</li>
+  <li class="fragment">$b$ : base level (constant signal offset)</li>
+  <li class="fragment">$\eta$ : structural index ($\eta=3$ for dipoles)</li>
 </ul>
 </div>
 
@@ -796,7 +743,7 @@ $$
 
 
 ===============================================================================
-# Equação de Homogeneidade de Euler
+# Euler’s Homogeneity Equation
 
 $$
 (\mathbf{x}-\mathbf{v})\cdot \nabla f = (b-f)\eta
@@ -804,7 +751,8 @@ $$
 
 <div class="quote">
 
-A taxa de **variação do campo** ($\nabla f$) multiplicada pela **distância vetorial** ($\mathbf{x}-\mathbf{v}$) é proporcional à **amplitude do campo medido** ($b-f$)
+The rate of **field variation** ($\nabla f$) multiplied by the **distance** 
+($\mathbf{x}-\mathbf{v}$) is proportional to the **measured field amplitude** ($b-f$)
 </div>
 
 <div class="footnote-center">
@@ -814,16 +762,16 @@ A taxa de **variação do campo** ($\nabla f$) multiplicada pela **distância ve
 </div>
 
 ===============================================================================
-# Equação de Homogeneidade de Euler
+# Euler’s Homogeneity Equation
 
 $$
 (x - x_c)\partial_x f + (y - y_c)\partial_y f + (z - z_c)\partial_z f = (b - f)\eta
 $$ 
-<p class="fragment"> Isolar os parâmetros parâmetros $x_c, y_c, z_c, b$</p>
+<p class="fragment"> Isolating the parameters $x_c, y_c, z_c, b$</p>
 <div class="fragment">
 
 $$
-\underbrace{x_c \partial_x f + y_c \partial_y f + z_c \partial_z f + \eta b}_\text{Com parâmetros} = \underbrace{x \partial_x f + y \partial_y f + z \partial_z f + \eta f}_\text{Sem parâmetros}
+\underbrace{x_c \partial_x f + y_c \partial_y f + z_c \partial_z f + \eta b}_\text{With prameters} = \underbrace{x \partial_x f + y \partial_y f + z \partial_z f + \eta f}_\text{Without prameters}
 $$
 </div>
 <div class="footnote-center">
@@ -833,7 +781,7 @@ $$
 </div>
 
 ===============================================================================
-# Equação de Homogeneidade de Euler
+# Euler’s Homogeneity Equation
 
 $$
 x_c \ \partial_x f + y_c \ \partial_y f + z_c \ \partial_z f + \eta b
@@ -841,7 +789,7 @@ x_c \ \partial_x f + y_c \ \partial_y f + z_c \ \partial_z f + \eta b
 x \ \partial_x f + y \ \partial_y f + z \ \partial_z f + \eta f
 $$
 
-<p class="fragment">Aplicamos a cada ponto de dado, forma-se um sistema linear $N \times 4$</p>
+<p class="fragment">We apply it to each data point, forming an $N \times 4$ linear system</p>
 
 <p class="fragment">
 \[
@@ -852,12 +800,12 @@ $$
 \vdots & \vdots & \vdots & \vdots \\
 \partial_x f_N & \partial_y f_N & \partial_z f_N & \eta
 \end{bmatrix}
-}_{\text{Matriz Jacobiana}}
+}_{\text{Jacobian matrix}}
 \underbrace{
 \begin{bmatrix}
 x_c \\ y_c \\ z_c \\ b
 \end{bmatrix}
-}_{\text{Vetor de parâmetros}}
+}_{\text{Parameters vector}}
 =
 \underbrace{
 \begin{bmatrix}
@@ -866,7 +814,7 @@ x_2 \partial_x f_2 + y_2 \partial_y f_2 + z_2 \partial_z f_2 + \eta f_2 \\
 \vdots \\
 x_N \partial_x f_N + y_N \partial_y f_N + z_N \partial_z f_N + \eta f_N
 \end{bmatrix}
-}_{\text{Vetor de pseudodados}}
+}_{\text{Pseudodata vector}}
 \]
 </p>
 
@@ -890,53 +838,54 @@ $$
 
 <div class="text-left fragment">
 
-<p class="text-left">Cuja função objetivo é:</p>
+<p class="text-left">Which the misfit is:</p>
 
 $$
 \Phi (\mathbf{p}) = ||\mathbf{h}^o - \mathbf{h}||^2
 $$
 
 <ul>
-  <li>$\Phi (\mathbf{p})$ : função objetivo</li>
-  <li>$\mathbf{h}^o$ : dados observados</li>
-  <li>$\mathbf{h}$ : dados preditos</li>
+  <li>$\Phi (\mathbf{p})$ : misfit function</li>
+  <li>$\mathbf{h}^o$ : observed data</li>
+  <li>$\mathbf{h}$ : predicted data</li>
 </ul>
 
 </div>
 
 ===============================================================================
-<ol>
-  <li>
-    <b>Expandindo a expressão:</b><br>
-    \[
-    \Phi(\mathbf{p}) = (\mathbf{h}^o - \mathbf{G}\mathbf{p})^\top (\mathbf{h}^o - \mathbf{G}\mathbf{p}) = \underbrace{\mathbf{h}^{o\top}\mathbf{h}^o - 2\mathbf{p}^\top \mathbf{G}^\top \mathbf{h}^o + \mathbf{p}^\top \mathbf{G}^\top \mathbf{G} \mathbf{p}}_\text{Paraboloide}
-    \]
-  </li>
-  <li class="fragment">
-    <b>Utilizamos o gradiente em respeito a \(\mathbf{p}\) e atribuímos zero:</b><br>
-    \[
-      \nabla_{\mathbf{p}} \Phi(\mathbf{p}) = -2 \mathbf{G}^\top \mathbf{h}^o + 2 \mathbf{G}^\top \mathbf{G} \mathbf{p}=\mathbf{0}
-    \]
-    \[
-      \boxed{
-      \mathbf{G}^\top \mathbf{G} \mathbf{p} = \mathbf{G}^\top \mathbf{h}^o
-      }
-    \]
-    \[
-      \boxed{
-        \mathbf{p} = (\mathbf{G}^\top \mathbf{G})^{-1} \mathbf{G}^\top \mathbf{h}^o
-      }
-    \]
-  </li>
-  <li class="text-center fragment">
-    <b>Assim estimamos $x_c$, $y_c$, $z_c$ e $b$</b><br>
-  </li>
-</ol>
+# Solução por mínimos quadrados
+
+$$
+\mathbf{G} \mathbf{p} = \mathbf{h}
+$$
+
+<div class="text-left">
+
+<p class="text-left">Which the misfit is:</p>
+
+$$
+\Phi (\mathbf{p}) = ||\mathbf{h}^o - \mathbf{h}||^2
+$$
+</div>
+
+<div>
+  \[
+    \boxed{
+    \mathbf{G}^\top \mathbf{G} \mathbf{p} = \mathbf{G}^\top \mathbf{h}^o
+    }
+  \]
+  \[
+    \boxed{
+      \mathbf{p} = (\mathbf{G}^\top \mathbf{G})^{-1} \mathbf{G}^\top \mathbf{h}^o
+    }
+  \]
+  <b>Estimate $x_c$, $y_c$, $z_c$ e $b$</b><br>
+</div>
 
 ===============================================================================
-# Inversão linear
-## Modelo de Campo de Dipolo
-<p class="text-left">O campo $\mathbf{b}$ gerado por um dipolo $\mathbf{m} = [m_x \ m_y \ m_z]^\top$:</p>
+# Linear inversion
+## Dipole Field Model
+<p class="text-left">The field $\mathbf{b}$ generated by a dipole $\mathbf{m} = [m_x \ m_y \ m_z]^\top$:</p>
 $$
 \mathbf{b} = 
 \begin{bmatrix}
@@ -961,12 +910,12 @@ m_z
 $$
 <br>
 <div class="text-left"><ul>
-<li> $r=\sqrt{(x-x_c)^2+(y-y_c)^2+(z-z_c)^2}$: distância cartesiana entre os pontos de observação e da fonte</li>
-<li> $\mu_0$ : permeabilidade magnética no vácuo</li>
+<li> $r=\sqrt{(x-x_c)^2+(y-y_c)^2+(z-z_c)^2}$: Cartesian distance between the observation and source points</li>
+<li> $\mu_0$ : magnetic permeability of vacuum</li>
 </ul></div>
 
 ===============================================================================
-<h1>Sistema para $b_z$</h1>
+<h1>$b_z$ system</h1>
 <p>
 \[
 \mathbf{b} = 
@@ -1005,10 +954,10 @@ m_z
 $$
 
 ===============================================================================
-# Formulação do Problema
+# Problem Formulation
 <p class="text-left">
-Dadas $N$ observações de $b_z$ em uma janela contendo uma única fonte,
-forma-se um sistema linear $N \times 3$:
+We apply the aquation for $N$ observations of $b_z$:
+</p>
 </p>
 \[
 \underbrace{  
@@ -1017,13 +966,13 @@ forma-se um sistema linear $N \times 3$:
 \frac{\mu_0}{4\pi} \frac{3(z_2 - z_c)(x_2 - x_c)}{r_2^5} & \frac{\mu_0}{4\pi} \frac{3(z_2 - z_c)(y_2 - y_c)}{r_2^5} & \frac{\mu_0}{4\pi} \left( \frac{3(z_2 - z_c)^2}{r_2^5} - \frac{1}{r_2^3} \right) \\
 \vdots & \vdots & \vdots \\
 \frac{\mu_0}{4\pi} \frac{3(z_N - z_c)(x_N - x_c)}{r_N^5} & \frac{\mu_0}{4\pi} \frac{3(z_N - z_c)(y_N - y_c)}{r_N^5} & \frac{\mu_0}{4\pi} \left( \frac{3(z_N - z_c)^2}{r_N^5} - \frac{1}{r_N^3} \right)
-\end{bmatrix}}_{\text{Jacobiana}}
+\end{bmatrix}}_{\text{Jacobian matrix}}
 \underbrace{
 \begin{bmatrix}
 m_x \\
 m_y \\
 m_z
-\end{bmatrix}}_{\text{Parâmetros}}
+\end{bmatrix}}_{\text{Parameter vector}}
 =
 \underbrace{
 \begin{bmatrix}
@@ -1031,35 +980,36 @@ b_{z_1} \\
 b_{z_2} \\
 \vdots \\
 b_{z_N}
-\end{bmatrix}}_{\text{Observação}}
+\end{bmatrix}}_{\text{Observed data}}
 \]
 <p class="fragment">$$\mathbf{Am=d^o}$$</p>
 
 ===============================================================================
-# Estimativa por Mínimos Quadrados
-<p class="text-left">Minimiza-se a função objetivo:</p>
+# Least-Squares Estimation
+<p class="text-left">Minimize misfit:</p>
 
 $$\Gamma(\mathbf{m}) = \|\mathbf{d}^{o}-\mathbf{A}\mathbf{m}\|^2=(\mathbf{d}^{o}-\mathbf{A}\mathbf{m})^T(\mathbf{d}^{o}-\mathbf{A}\mathbf{m})$$
-<p class="text-left">O que leva às equações normais:</p>
+<p class="text-left">Which leads to the normal equations:</p>
+
 $$\mathbf{A}^T\mathbf{A}\mathbf{m} = \mathbf{A}^T\mathbf{d}^{o}$$
 
-<p class="fragment">A solução fornece o <b>momento de dipolo estimado ($\mathbf{m}$)</b></p>
+<p class="fragment">The solution provides the <b>estimated dipole moment ($\mathbf{m}$)</b></p>
 
 
 ===============================================================================
 <div class="text-left" >
 
-- Temos estimativas de **momentos** e **posição**
+- We have estimates of the **moment** and **position**
 </div>
 
 <div class="text-left fragment">
 
-- A Deconvolução de Euler não estima tão bem a **profundidade**
+- Euler Deconvolution does not estimate **depth** very accurately
 </div>
 
 <div class="text-left fragment">
 
-- Problema das **fontes interferentes** 
+- The problem of **interfering sources**
 </div>
 
 ===============================================================================
@@ -1071,195 +1021,310 @@ $$\mathbf{A}^T\mathbf{A}\mathbf{m} = \mathbf{A}^T\mathbf{d}^{o}$$
 
 ===============================================================================
 <p class="text-left">
-  <b>Etapa 1 - Detecção da fonte</b>
+  <b>Step 1 - Source detection</b>
 </p>
 
 <p class="text-left">
-  <b>Etapa 2 - Processamento iterativo (por janela)</b>
+  <b>Step 2 - Iterative processing (per window)</b>
 </p>
 
 <ul>
   <li class="text-left">
-    (a) <b>Isolamento dos dados:</b>
-    selecionar os dados magnéticos dentro da janela
+    (a) <b>Data isolation:</b>
+    select the magnetic data within the window
   </li>
 
   <li class="text-left">
-    (b) <b>Deconvolução de Euler:</b>
-    estimar a posição da fonte
+    (b) <b>Euler deconvolution:</b>
+    estimate the source position
   </li>
 
   <li class="text-left">
-    (c) <b>Inversão linear:</b>
-    estimar o momento do dipolo usando posição fixa
+    (c) <b>Linear inversion:</b>
+    estimate the dipole moment using a fixed position
   </li>
 
   <li style="color: red !important;" class="text-left">
-    (d) <b>Inversão híbrida:</b>
-    refinar posição e momento via
+    (d) <b>Hybrid inversion:</b>
+    refine position and moment via
     <b>Levenberg–Marquardt</b>
   </li>
 
   <li class="text-left">
-    (e) <b>Remoção do sinal:</b>
-    modelar o dipolo diretamente e subtrair do conjunto de dados completo
+    (e) <b>Signal removal:</b>
+    directly model the dipole and subtract it from the full dataset
   </li>
 </ul>
 
 <p class="text-left">
-  <b>Etapa 3 - Repetir a detecção nos dados residuais:</b>
-  aplicar as etapas 1 e 2 ao conjunto de dados residual
+  <b>Step 3 - Repeat detection on the residual data:</b>
+  apply steps 1 and 2 to the residual dataset
 </p>
 
 ===============================================================================
-# Aspectos importantes
+# Important Aspects
+
 <div class="fragment text-left">
 
-- Para uma localização fixa ($\mathbf{v}$), o campo magnético **depende linearmente** do momento magnético ($\mathbf{m}$)
+- For a fixed location ($\mathbf{v}$), the magnetic field **depends linearly** on the magnetic moment ($\mathbf{m}$)
 
 </div>
+
 <div class="fragment text-left">
 
-- Evitamos o **acoplamento direto** de parâmetros com **ordens de magnitude muito diferentes**. Em inversões simultâneas, a diferença entre a escala da localização (**10⁻⁶ m**) e do momento (**10⁻¹³ Am²**) dificulta a convergência
+- We avoid the **direct coupling** of parameters with **very different orders of magnitude**. In simultaneous inversions, the difference between the scale of the location (**10⁻⁶ m**) and the moment (**10⁻¹³ Am²**) hinders convergence
 
 </div>
+
 <div class="fragment text-left">
 
-- Garantimos um problema **bem escalonado** ao separar a inversão em **grupos fisicamente homogêneos**, dispensando a necessidade de **normalizações** explícitas de parâmetros
+- We ensure a **well-scaled** problem by separating the inversion into **physically homogeneous groups**, eliminating the need for explicit parameter **normalization**
 
 </div>
 
 ===============================================================================
-# Inversão Híbrida
+
+# Hybrid Inversion
+
 <ul>
   <li class="fragment">
-    <b>1. Inicialização:</b> chute inicial de posição ($\mathbf{v}$) obtido via Deconvolução de Euler
+    <b>1. Initialization:</b> initial position guess ($\mathbf{v}$) obtained via Euler Deconvolution
   </li>
   
   <li class="fragment">
-    <b>2. Inversão acoplada (Loop Principal):</b>
+    <b>2. Coupled inversion (Main Loop):</b>
     <ul>
       <li class="fragment">
-        (A) <b>Estimativa linear:</b> fixa a posição e calcula o momento ($\mathbf{m}$)
+        (A) <b>Linear estimation:</b> fixes the position and computes the moment ($\mathbf{m}$)
       </li>
       <li class="fragment">
-        (B) <b>Atualização não linear:</b> refina a posição da fonte ($\mathbf{v}$) via algoritmo Levenberg-Marquardt
+        (B) <b>Nonlinear update:</b> refines the source position ($\mathbf{v}$) using the Levenberg-Marquardt algorithm
       </li>
     </ul>
   </li>
+
   <li class="fragment">
-    <b>3. Convergência:</b> o processo encerra quando a redução do valor da função objetivo atinge a tolerância  de $10^{-2}$ 
+    <b>3. Convergence:</b> the process stops when the reduction in the objective function reaches a tolerance of $10^{-2}$ 
   </li>
 </ul>
 
 ===============================================================================
-# Otimização via Levenberg-Marquardt
+
+# Optimization via Levenberg-Marquardt
+
 <div class="fragment text-left">
 
-- Utilizamos este método por ser **baseado em gradiente**, sendo melhor optimizado quando comparado a métodos que **independem de derivadas**, como Nelder-Mead, para problemas **suaves e diferenciáveis**
+- We use this method because it is **gradient-based**, making it better optimized compared to **derivative-free** methods such as Nelder-Mead for **smooth and differentiable** problems
 
 </div>
+
 <div class="fragment text-left">
 
-- Minimizamos a função objetivo a partir do método de mínimos quadrados $\Psi(\mathbf{v})$:
+- We minimize the least-squares objective function $\Psi(\mathbf{v})$:
 
 $$\Psi(\mathbf{v}) = \| \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \|^2$$
 
-- $\mathbf{v}$: posição
-- $\mathbf{d}^o$: dados observados do campo magnético
-- $\mathbf{d}(\mathbf{v})$: dados preditos
+- $\mathbf{v}$: position
+- $\mathbf{d}^o$: observed magnetic field data
+- $\mathbf{d}(\mathbf{v})$: predicted data
 
 </div>
 
 ===============================================================================
-# Inversão Híbrida
+
+# Hybrid Inversion
+
 <div class="fragment text-left">
 
-- Atualizamos a localização resolvendo o sistema amortecido para o incremento ($\Delta \mathbf{v})$:
+- We update the location by solving the damped system for the increment ($\Delta \mathbf{v})$:
 
 $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \mathbf{J}) \right) \Delta\mathbf{v} = \mathbf{J}^T \big( \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \big)$$
 
-- $\mathbf{J}$: matriz Jacobiana
-- $\mathbf{J}^T \mathbf{J}$: aproximação da Hessiana
-- $(\mathbf{d}^o - \mathbf{d}(\mathbf{v}))$: vetor de resíduos
-- $\alpha \cdot \mathrm{diag}(\mathbf{J}^T \mathbf{J})$: amortecimento escalonado pela curvatura local
+- $\mathbf{J}$: Jacobian matrix
+- $\mathbf{J}^T \mathbf{J}$: Hessian approximation
+- $(\mathbf{d}^o - \mathbf{d}(\mathbf{v}))$: residual vector
+- $\alpha \cdot \mathrm{diag}(\mathbf{J}^T \mathbf{J})$: damping scaled by local curvature
+
 </div>
 
 ===============================================================================
-# Parâmetro de Marquardt 
+
+# Marquardt Parameter
+
 <div class="text-left">
 
-- Inicializamos o **parâmetro de Marquardt ($\alpha$)** de forma não arbitrária, baseando-nos na mediana da diagonal da aproximação Hessiana para o condicionamento do sistema:
+- We initialize the **Marquardt parameter ($\alpha$)** in a non-arbitrary way, based on the median of the diagonal of the Hessian approximation for system conditioning:
 
 $$\alpha = S \cdot \text{median}(\text{diag}(\mathbf{J}^T\mathbf{J})) \quad \text{, } S = 10^{-20}$$
 
 </div>
 
 ===============================================================================
+
 $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \mathbf{J}) \right) \Delta\mathbf{v} = \mathbf{J}^T \big( \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \big)$$
 
 <div class="fragment text-left">
 
-- Ajustamos $\alpha$ dinamicamente via estratégia de **região de confiança**:
-  - **$\downarrow$ valor da função objetivo = Sucesso:** aceitamos $\Delta \mathbf{v}$ e dividimos $\alpha$ por 10 tendendo a **Gauss-Newton**
-    - Utiliza a curvatura da Hessiana ($\mathbf{J}^T \mathbf{J}$) para dar passos longos
-  - **$\uparrow$ valor da função objetivo = Falha:** rejeitamos $\Delta \mathbf{v}$ e multiplicamos $\alpha$ por 10 tendendo a **Steepest Descent**
-    - O termo diagonal domina, fazendo o passo seguir a direção do gradiente negativo
+- We dynamically adjust $\alpha$ using a **trust-region** strategy:
+  - **$\downarrow$ objective function value = Success:** we accept $\Delta \mathbf{v}$ and divide $\alpha$ by 10, tending toward **Gauss-Newton**
+    - Uses the Hessian curvature ($\mathbf{J}^T \mathbf{J}$) to take larger steps
+  - **$\uparrow$ objective function value = Failure:** we reject $\Delta \mathbf{v}$ and multiply $\alpha$ by 10, tending toward **Steepest Descent**
+    - The diagonal term dominates, making the step follow the negative gradient direction
 
 </div>
 
 ===============================================================================
-# Estabilidade 
+
+# Stability
+
 <div class="text-left">
 
-- Limitamos o deslocamento máximo por iteração ($\|\Delta \mathbf{v}\| \le 10\mu m$) para evitar atualizações que não façam sentido fisicamente e garantir que a solução permaneça dentro da janela de dados
+- We limit the maximum displacement per iteration ($\|\Delta \mathbf{v}\| \le 10\mu m$) to avoid physically unrealistic updates and ensure that the solution remains within the data window
 
 </div>
 
 ===============================================================================
-# Recapitulando
+<!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
+
+<section>
+<style>
+  pre.compact code {
+    line-height: 1.0em !important;
+    font-size: 1.3em !important;
+  }
+  .fragment {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .block-space {
+    margin-top: -1.0em !important;
+  }
+  .code {
+    line-height: 0.2em;
+  }
+</style>
+<pre class="compact"><code class="python" data-trim data-noescape>
+<span>
+<span class="code">    # Use nonlinear inversion to estimate dipolar moments and source locations</span>
+<span class="code">    results = mg.iterative_nonlinear_inversion(</span>
+<span class="code">        data_up, bounding_boxes[name], copy_data=True</span>
+<span class="code">    )</span>
+<span class="code">    locations[name] = results[1]</span>
+<span class="code">    dipole_moments[name] = results[2]</span>
+</code></pre>
+</section>
+
 
 ===============================================================================
-<p class="text-left fragment" data-fragment-index="0">
-  <b>Etapa 1 - Detecção da fonte</b>
-</p>
+# Speleothem
+<img src="assets/result-speleothem.png" style="width: 100%" >
 
-<p class="text-left fragment" data-fragment-index="1">
-  <b>Etapa 2 - Processamento iterativo (por janela)</b>
-</p>
+<div class="row">
+<div class="col text-left small">
 
-<ul>
-  <li class="text-left fragment" data-fragment-index="2">
-    (a) <b>Isolamento dos dados:</b> selecionar os dados magnéticos dentro da janela
-  </li>
-  <li class="text-left fragment" data-fragment-index="3">
-    (b) <b>Deconvolução de Euler:</b> estimar a <em>posição</em> da fonte
-  </li>
-  <li class="text-left fragment" data-fragment-index="4">
-    (c) <b>Inversão linear:</b> estimar o <em>momento</em> do dipolo usando posição fixa
-  </li>
+<div class="fragment">
 
-  <div style="display: grid;">
-    <li class="text-left fragment fade-in-then-out" data-fragment-index="5" style="grid-area: 1/1; list-style: none;">
-(d) <b>Inversão não linear:</b> refinar posição e momento via 
-<a href="https://academic.oup.com/comjnl/article-abstract/7/4/308/354237?redirectedFrom=fulltext">Nelder-Mead</a>
-</li>
+- **57 possible sources** detected
+</div>
 
-<li class="text-left fragment fade-in" data-fragment-index="6" style="grid-area: 1/1; list-style: none;">
-(d) <b>Inversão híbrida:</b> refinar posição e momento via 
-<b>Levenberg-Marquardt</b>
-</li>
-  </div>
+<div class="fragment">
 
-  <li class="text-left fragment" data-fragment-index="7">
-    (e) <b>Remoção do sinal:</b> modelar o dipolo diretamente e subtrair do conjunto de dados completo
-  </li>
-</ul>
+- **Mineralogy and pulses:** differentiation between **hematite** (+Y) and **magnetite** (-Y) using IRM pulse fields (2.7 T and 0.3 T)
+</div>
 
-<p class="text-left fragment" data-fragment-index="8">
-  <b>Etapa 3 - Repetir a detecção nos dados residuais:</b>
-  aplicar as etapas 1 e 2 ao conjunto de dados residual
-</p>
+</div>
+
+<div class="col text-left small">
+
+<div class="fragment">
+
+- **Low dispersion** of estimated moments
+</div>
+
+</div>
+
+</div>
+
+<div class="footnote-center">
+
+[Sample and characterization: Carmo et al. 2023](https://figshare.com/articles/dataset/QDM_magnetic_microscopy_dataset_of_a_speleothem_from_Morocco/22965200/1?file=40707380)
+</div>
+
+===============================================================================
+# Ceramic tile fragment
+<img src="assets/result-ceramic.png" style="width: 100%" >
+
+<div class="row">
+<div class="col text-left small">
+
+<div class="fragment">
+
+- **397 possible sources** detected
+</div>
+
+<div class="fragment">
+
+- **Mineralogy:** **titanomagnetite** (SD/PSD) carrying the NRM in a **stable and dispersed assemblage**
+</div>
+  
+</div>
+
+<div class="col text-left small">
+
+<div class="fragment">
+
+- Estimated moments are **reasonably concentrated**
+</div>
+
+</div>
+
+</div>
+
+<div class="footnote-center">
+
+[Sample and characterization: Poletti et al. (2016)](https://www.sciencedirect.com/science/article/pii/S0012821X16301625)
+</div>
+
+===============================================================================
+# Basaltic rock
+<img src="assets/result-basalt.png" style="width: 100%" >
+
+<div class="row">
+<div class="col text-left small">
+
+<div class="fragment">
+
+- **661 possible sources** identified
+</div>
+
+<div class="fragment">
+
+- **Mineralogy:** low-Ti **magnetite** ($10-50$ µm) with SD, PSD, and multidomain (MD) grains
+</div>
+
+</div>
+
+<div class="col text-left small">
+
+<div class="fragment">
+
+- Region with a **high concentration** of overlapping anomalies
+</div>
+
+<div class="fragment">
+
+- Estimated magnetic moments with **high dispersion**
+</div>
+
+</div>
+</div>
+
+<div class="footnote-center">
+
+[Sample and characterization: Moncinhatto et al. (2019)](https://academic.oup.com/gji/article/220/2/821/5603748)
+</div>
 
 
 ===============================================================================
@@ -1279,31 +1344,10 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 <!-- .slide: data-background-opacity="1" data-background-image="assets/documentation-tutorial.png"  data-background-size="contain" data-background-color="#262626" -->
 
 ===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/github.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/github_1.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/github_readme.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/pull_requests.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/pull_request_details.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/pull_request_details_1.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/pull_request_details_2.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-# Robustez e Pipeline de CI/CD
+# Robustness and CI/CD Pipeline
 <div class="fragment text-left">
 
-- **Integração Contínua (CI):** implementamos um pipeline automatizado que executa nossos de **testes de unidade** a cada *commit*, assegurando **100% de cobertura** das funções presentes no pacote
+- **Continuous Integration (CI):** we implemented an automated pipeline that runs our **unit tests** on every *commit*, ensuring **100% coverage** of the functions included in the package
 
 </div>
 
@@ -1311,18 +1355,18 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 <!-- .slide: data-background-opacity="1" data-background-image="assets/test.png"  data-background-size="contain" data-background-color="#262626" -->
 
 ===============================================================================
-# Distribuição e Ciência Aberta
+# Distribution and Open Science
 <div class="fragment text-left">
 
-- **Adotamos os pilares da Ciência Aberta**: desenvolvimento transparente no GitHub, issue tracking público e documentação completa com tutoriais replicáveis
+- **We adopt the pillars of Open Science**: transparent development on GitHub, public issue tracking, and complete documentation with reproducible tutorials
 
 </div>
 
 <div class="fragment text-left">
 
-- **Entrega contínua (CD):** facilitaremos o acesso global da nossa futura **versão v1.0** através dos gerenciadores padrão da comunidade científica:
+- **Continuous Delivery (CD):** we will facilitate global access to our future **v1.0 release** through the scientific community’s standard package managers:
   * **PyPI** (Python Package Index)
-  * **conda-forge** (ambientes reprodutíveis)
+  * **conda-forge** (reproducible environments)
 
 </div>
 
@@ -1330,168 +1374,172 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 <!-- .slide: data-background-opacity="1" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808f5" -->
 
 ===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/installing-conda.png"  data-background-size="contain" data-background-color="#080808f5" -->
+# Performance and Accuracy Comparison
 
-===============================================================================
-<!-- .slide: data-background-opacity="1" data-background-image="assets/checks.png"  data-background-size="contain" data-background-color="#262626" -->
-
-===============================================================================
-# Comparação de Performance e Acurácia
 <div class="text-left">
 
-- Avaliamos o **Magali** contra o algoritmo de inversão não-linear de **Souza-Junior et al. (2025)**.
+- We evaluated **Magali** against the nonlinear inversion algorithm of **Souza-Junior et al. (2025)**.
 
 </div>
+
 <div class="fragment text-left">
 
-- **Garantimos condições justas:** ambos os métodos partem da **mesma estimativa inicial** via Deconvolução de Euler ($\eta=3$) e o **nível de base é previamente removido**. Os métodos foram executados em um notebook de processador **Ryzen 3** com **8 Gb RAM**
+- **We ensured fair conditions:** both methods start from the **same initial estimate** using Euler Deconvolution ($\eta=3$), and the **background level is removed beforehand**. The methods were executed on a laptop with a **Ryzen 3** processor and **8 GB RAM**
 
 </div>
+
 <div class="fragment text-left">
 
-- **Quantificamos** o desempenho em função do número de pontos de dados ($N$) realizando **5 inversões independentes** por resolução para obter medidas estáveis
+- We **quantified** performance as a function of the number of data points ($N$) by performing **5 independent inversions** per resolution to obtain stable measurements
 
 </div>
-
-===============================================================================
-<div class="row">
-<div class="col">
-
-- Definimos dois cenários sintéticos com diferentes resoluções de malha ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Modelo Simples:** Um único dipolo isolado
-
-</div>
-
-<div class="col-medium"><img src="assets/simple-model.png" style="width: 100%" >Espaçamento: $2 \mu m$</div>
-</div>
-
-===============================================================================
-<div class="row">
-<div class="col">
-
-- Definimos dois cenários sintéticos com diferentes resoluções de malha ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Modelo Simples:** Um único dipolo isolado
-
-</div>
-
-<div class="col-medium"><img src="assets/simple-model-1.png" style="width: 100%" > Espaçamento: $1 \mu m$</div>
-</div>
-
-
-===============================================================================
-<div class="row">
-<div class="col">
-
-- Definimos dois cenários sintéticos com diferentes resoluções de malha ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Modelo Simples:** Um único dipolo isolado
-
-</div>
-
-<div class="col-medium"><img src="assets/simple-model-2.png" style="width: 100%" > Espaçamento: $0.3 \mu m$</div>
-</div>
-
-===============================================================================
-<div class="row">
-<div class="col">
-
-- Definimos dois cenários sintéticos com diferentes resoluções de malha ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Modelo "Simple":** Um único dipolo isolado
-
-2. **Modelo "1-Interf.":** Um dipolo alvo + uma fonte interferente próxima
-
-</div>
-
-<div class="col-medium"><img src="assets/one-interf.png" style="width: 100%"> Espaçamento: $2 \mu m$</div>
-</div>
-
-===============================================================================
-<div class="row">
-<div class="col">
-
-- Definimos dois cenários sintéticos com diferentes resoluções de malha ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
-
-1. **Modelo "Simple":** Um único dipolo isolado
-
-2. **Modelo "1-Interf.":** Um dipolo alvo + uma fonte interferente próxima
-
-</div>
-
-<div class="col-medium"><img src="assets/one-interf-1.png" style="width: 100%">Espaçamento: $1 \mu m$</div>
-</div>
-
 
 ===============================================================================
 
 <div class="row">
 <div class="col">
 
-- Definimos dois cenários sintéticos com diferentes resoluções de malha ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
+- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
 
-1. **Modelo "Simple":** Um único dipolo isolado
-
-2. **Modelo "1-Interf.":** Um dipolo alvo + uma fonte interferente próxima
+1. **Simple Model:** A single isolated dipole
 
 </div>
 
-<div class="col-medium"><img src="assets/one-interf-2.png" style="width: 100%">Espaçamento: $0.3 \mu m$</div>
+<div class="col-medium"><img src="assets/simple-model.png" style="width: 100%" >Spacing: $2 \mu m$</div>
 </div>
-
 
 ===============================================================================
+
+<div class="row">
+<div class="col">
+
+- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
+
+1. **Simple Model:** A single isolated dipole
+
+</div>
+
+<div class="col-medium"><img src="assets/simple-model-1.png" style="width: 100%" > Spacing: $1 \mu m$</div>
+</div>
+
+===============================================================================
+
+<div class="row">
+<div class="col">
+
+- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
+
+1. **Simple Model:** A single isolated dipole
+
+</div>
+
+<div class="col-medium"><img src="assets/simple-model-2.png" style="width: 100%" > Spacing: $0.3 \mu m$</div>
+</div>
+
+===============================================================================
+
+<div class="row">
+<div class="col">
+
+- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
+
+1. **Simple Model:** A single isolated dipole
+
+2. **"1-Interf." Model:** A target dipole + a nearby interfering source
+
+</div>
+
+<div class="col-medium"><img src="assets/one-interf.png" style="width: 100%"> Spacing: $2 \mu m$</div>
+</div>
+
+===============================================================================
+
+<div class="row">
+<div class="col">
+
+- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
+
+1. **Simple Model:** A single isolated dipole
+
+2. **"1-Interf." Model:** A target dipole + a nearby interfering source
+
+</div>
+
+<div class="col-medium"><img src="assets/one-interf-1.png" style="width: 100%">Spacing: $1 \mu m$</div>
+</div>
+
+===============================================================================
+
+<div class="row">
+<div class="col">
+
+- We defined two synthetic scenarios with different grid resolutions ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
+
+1. **Simple Model:** A single isolated dipole
+
+2. **"1-Interf." Model:** A target dipole + a nearby interfering source
+
+</div>
+
+<div class="col-medium"><img src="assets/one-interf-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
+</div>
+
+===============================================================================
+
 <div class="row">
 <div class="col">
 
 - **Simple:** 
 
-  - **Souza-Junior et al. (2025):** mantém um erro quase constante, menor que do **Magali** e abaixo de **0,2 μm**
+  - **Souza-Junior et al. (2025):** maintains an almost constant error, lower than **Magali**, and below **0.2 μm**
   
-  - **Magali:**  cresce conforme aumenta a densidade de dados e **estabiliza** em um erro de **~0,6 μm** para altas densidades de pontos
+  - **Magali:** increases as data density grows and **stabilizes** at an error of approximately **~0.6 μm** for high point densities
 
 </div>
+
 <div class="col-medium"><img src="assets/location-simple.png" style="width: 100%" ></div>
 </div>
 
-
 ===============================================================================
+
 <div class="row">
 <div class="col">
 
-
 - **1-Interf.:** 
 
-  - **Souza-Junior et al. (2025):** mantém um erro quase constante pouco acima de **2 μm** 
+  - **Souza-Junior et al. (2025):** maintains an almost constant error slightly above **2 μm** 
  
-  - **Magali:** melhora com o aumento de $N$, atingindo valores menores que **1 μm**
+  - **Magali:** improves as $N$ increases, reaching values below **1 μm**
 
 </div>
+
 <div class="col-medium"><img src="assets/location-one-interf.png" style="width: 100%" ></div>
 </div>
 
 ===============================================================================
+
 <div class="row">
 <div class="col">
 
 - **Simple:** 
-  - Magali tem um erro de intensidade muito próximo comparação a Souza-Junior et al. (2025), tendo ambos <br>~1$\times10^{-14}Am^2$
+  - Magali presents an intensity error very close to that of Souza-Junior et al. (2025), with both below <br>~1$\times10^{-14}Am^2$
 
 </div>
+
 <div class="col-medium"><img src="assets/intensity_simple.png" style="width: 100%" ></div>
 </div>
 
-
 ===============================================================================
+
 <div class="row">
 <div class="col">
 
 - **1-Interf.:** 
-  - Souza-Junior et al. (2025) apresenta um erro de intensidade de ~0.5$\times 10^{-14}Am^2$ 
-  - Magali apresenta erro de intensidade de ~0.6$\times 10^{-14}Am^2$
+  - Souza-Junior et al. (2025) presents an intensity error of ~0.5$\times 10^{-14}Am^2$ 
+  - Magali presents an intensity error of ~0.6$\times 10^{-14}Am^2$
 
 </div>
+
 <div class="col-medium"><img src="assets/intensity_one_interf.png" style="width: 100%" ></div>
 </div>
 
@@ -1500,279 +1548,142 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 <div class="row">
 <div class="col">
 
-- **Souza-Junior et al. (2025):** tempo de execução **cresce linearmente** com o aumento do númeo de dados ($N$).
+- **Souza-Junior et al. (2025):** execution time **grows linearly** with the increase in the number of data points ($N$)
 
-- **Magali:** mantém tempos de execução estáveis e abaixo de **0,5 segundos**.
+- **Magali:** maintains stable execution times below **0.5 seconds**
 </div>
+
 <div class="col-medium"><img src="assets/execution_time_comparison.png" style="width: 100%" ></div>
 </div>
 
 ===============================================================================
+
 <div class="row">
 <div class="col">
 
-- **1-Interf.:** melhoria de aproximadamente **90%** para todos os números de dados
+- **1-Interf.:** approximately **90% improvement** for all data sizes
 
-- **Simple:** melhoria quase sempre maior que **60%** superando **90%** em cenários com mais de **5.000 pontos**
+- **Simple:** improvement almost always greater than **60%**, exceeding **90%** in scenarios with more than **5,000 points**
+
 </div>
+
 <div class="col-medium"><img src="assets/percentage_of_improvement_execution_time.png" style="width: 100%" ></div>
 </div>
 
 ===============================================================================
+
 <div class="row">
 <div class="col">
 
 - **Simple:**
-  - **Souza-Junior et al. (2025):** é constante a **~1 grau**
+  - **Souza-Junior et al. (2025):** remains constant at approximately **~1 degree**
 
-  - **Magali:** inicia a valor similar ao de Souza-Junior et al. (2025) e decai conforme a densidade de pontos aumenta atingindo **~0.4 grau**
+  - **Magali:** starts at a value similar to Souza-Junior et al. (2025) and decreases as point density increases, reaching approximately **~0.4 degree**
 
 </div>
+
 <div class="col-medium"><img src="assets/angular_error_simple.png" style="width: 100%" ></div>
 </div>
 
 ===============================================================================
+
 <div class="row">
 <div class="col">
 
 - **1-Interf.:**
-  - **Souza-Junior et al. (2025):**  permanece praticamente constante a **12 graus**, independentemente do volume de dados
+  - **Souza-Junior et al. (2025):** remains nearly constant at **12 degrees**, regardless of data volume
 
-  - **Magali:** diminui conforme $N$ aumenta, se aproximando a **6 graus**
+  - **Magali:** decreases as $N$ increases, approaching **6 degrees**
 
 </div>
+
 <div class="col-medium"><img src="assets/angular_error_one_interf.png" style="width: 100%" ></div>
 </div>
 
 ===============================================================================
+
 <div class="row">
 <div class="col">
 
-- **Simple:** cresce conforme o número de pontos aumenta e estabiliza acima de **60%**
+- **Simple:** increases as the number of points grows and stabilizes above **60%**
 
-- **1-Interf.:** cresce conforme o número de pontos aumenta, atingindo valor **~45%**
+- **1-Interf.:** increases as the number of points grows, reaching approximately **~45%**
 
 </div>
+
 <div class="col-medium"><img src="assets/percentage_of_improvement_angular_error.png" style="width: 100%" ></div>
 </div>
 
 ===============================================================================
 
-===============================================================================
-# Estalagmite
-<img src="assets/result-speleothem.png" style="width: 100%" >
-<div class="row">
-<div class="col text-left small">
-
-<div class="fragment">
-
-- **57 possíveis fontes** detectadas
-</div>
-
-
-<div class="fragment">
-
-- **Mineralogia e pulsos:** diferenciação de **hematita** (+Y) e **magnetita** (-Y) através de campos de pulso IRM (2.7 T e 0.3 T)
-</div>
-
-</div>
-
-<div class="col text-left small">
-
-<div class="fragment">
-
-- **Baixa dispersão** de momentos estimados
-</div>
-
-</div>
-
-</div>
-<div class="footnote-center">
-
-[Amostra e caracterização: Carmo et al. 2023](https://figshare.com/articles/dataset/QDM_magnetic_microscopy_dataset_of_a_speleothem_from_Morocco/22965200/1?file=40707380)
-</div>
-
-===============================================================================
-# Fragmento de ladrilho cerâmico
-<img src="assets/result-ceramic.png" style="width: 100%" >
-<div class="row">
-<div class="col text-left small">
-
-<div class="fragment">
-
-- **397 posíveis  fontes** detectadas
-</div>
-
-<div class="fragment">
-
-- **Mineralogia:** **titanomagnetita** (SD/PSD) portadora da NRM em **assembleia estável e dispersa**
-</div>
-  
-</div>
-
-<div class="col text-left small">
-<div class="fragment">
-
-- Momentos estimados **razoavelmente concentados**
-</div>
-
-</div>
-
-</div>
-<div class="footnote-center">
-
-[Amostra e caracterização: Poletti et al. (2016)](https://www.sciencedirect.com/science/article/pii/S0012821X16301625)
-</div>
-
-===============================================================================
-# Rocha Basáltica
-<img src="assets/result-basalt.png" style="width: 100%" >
-<div class="row">
-<div class="col text-left small">
-
-
-
-<div class="fragment">
-
-- **661 possíveis fontes** encontradas
-</div>
-
-
-<div class="fragment">
-
-- **Mineralogia:** **magnetita** de baixo Ti ($10-50$ µm) com grãos SD, PSD e multidomínio (MD)</li>
-</div>
-</div>
-
-<div class="col text-left small">
-
-
-<div class="fragment">
-
-- Região com **alta concentração** de anomalias sobrepostas
-</div>
-
-<div class="fragment">
-
-- Momentos magnéticos estimados com **alta dispersão**
-</div>
-</div>
-</div>
-<div class="footnote-center">
-
-[Amostra e caracterização: Moncinhatto et al. (2019)](https://academic.oup.com/gji/article/220/2/821/5603748)
-</div>
-
-===============================================================================
 <div class="text-left fragment">
 
-- A **microscopia magnética** viabilizou o **paleomagnetismo** em escala de grão
+- **Magnetic microscopy** enabled **grain-scale paleomagnetism**
 </div>
 
 <div class="text-left fragment">
 
-- Códigos da literatura normalmente são desenvolvidos para o **escopo específico de cada artigo** e não seguem a práticas comuns de **reprodutibilidade**
+- Codes from the literature are usually developed for the **specific scope of each paper** and do not follow common **reproducibility** practices
 </div>
 
 <div class="text-left fragment">
 
-- Não existe **software livre**, organizado e padronizado para inversão desses dados
+- There is no **free, organized, and standardized software** for inversion of these data
 </div>
 
 <div class="fragment">
 
-**Consequência:** dificuldade de comparação, validação e avanço coletivo
+**Consequence:** difficulty in comparison, validation, and collective advancement
 </div>
 
 ===============================================================================
+# We achieved
+
 <div class="quote">
 
-Implementação do  **workflow completo** de Souza-Junior et al. (2025) com o avanço metodológico da **inversão híbrida** que  utiliza **derivadas analíticas**, evitando **normalização** e busca **extensiva**, em uma biblioteca **open-source**
-</div>
-
-===============================================================================
-
-- Tempo de execução abaixo de 1 segundo e com ganho de **&gt; 90% de eficiência**
-
-- Redução do erro angular **&gt; 60%** para o modelo simples e de **> 40%** para o modelo com interferência
-
-===============================================================================
-<div class="text-left">
-
-- Projetamos para o **futuro** do Magali:
-
-  <div class="fragment text-left">
-
-  - Implementação de **expansão multipolar**
-
-  </div>
-  <div class="fragment text-left">
-
-  - Módulos de **projeção estereográfica** e **filtragem** de inversão
-
-  </div>
-  <div class="fragment text-left">
-
-  - Rotinas avançadas para **detecção automática** de fontes
-
-  </div>
-  <div class="fragment text-left">
-
-  - Incluir Magali no **conda-forge** e **PyPi**
-
-  </div>
-  <div class="fragment text-left">
-
-  - Melhorias na **documentação**
-
-  </div>
-
-  <div class="fragment text-left">
-
-  - Release **V1.0**
-
-  </div>
-    <div class="fragment text-left">
-
-  - **Difundir** o uso da biblioteca
-
-  </div>
+Implementation of the **complete workflow** of Souza-Junior et al. (2025) with the methodological advancement of **hybrid inversion**, which uses **analytical derivatives**, avoiding **normalization** and **extensive search**, within an **open-source** library
 
 </div>
 
 ===============================================================================
+
+- Execution time below 1 second with an **efficiency gain > 90%**
+
+- Angular error reduction of **> 60%** for the simple model and **> 40%** for the 1-interf model
+
+===============================================================================
+
 <div class="quote">
 
-**Magali** une **rigor matemático** e **ciência aberta** para consolidar o **paleomagnetismo de escala de grão** como uma técnica rápida, acessível e totalmente reprodutível
+**Magali** combines **mathematical rigor** and **open science** to establish **grain-scale paleomagnetism** as a fast, accessible, and fully reproducible technique
 
 </div>
 
 ===============================================================================
-# Agradecimentos
+# Acknowledgements
 
 <img src="assets/capes.png" height=100%>
 
 
 ===============================================================================
 <!-- .slide: data-background-opacity="0.2" data-background-image="assets/magali-logo.png"  data-background-size="contain" data-background-color="#262626" -->
-# Obrigado!
+# Thank you!
 
 <div class="row">
 <div class="col">
 <i class="fas fa-comments"></i>
 <br>
-Contato:
 <a>yagomcastro1@gmail.com</a>
 
 <i class="fab fa-github"></i>
 <br>
-Código-fonte desta apresentação:
+Source-code for this presentation:
 <br>
-[github.com/yagomcastro/msc-presentation-2026](https://github.com/yagomcastro/msc-presentation-2026)
+[github.com/yagomcastro/magali-short-presentation](https://github.com/yagomcastro/magali-short-presentation)
 
 <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i>
 <br>
-O conteúdo desta apresentação está licenciado sob a
+The contents of this presentation are licensed under the
 <br>
 [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/)
 
