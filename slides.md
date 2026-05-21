@@ -1216,123 +1216,14 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </code></pre>
 </section>
 
-
 ===============================================================================
-# Speleothem
-<img src="assets/result-speleothem.png" style="width: 100%" >
-
-<div class="row">
-<div class="col text-left small">
-
-<div class="fragment">
-
-- **57 possible sources** detected
-</div>
-
-<div class="fragment">
-
-- **Mineralogy and pulses:** differentiation between **hematite** (+Y) and **magnetite** (-Y) using IRM pulse fields (2.7 T and 0.3 T)
-</div>
-
-</div>
-
-<div class="col text-left small">
-
-<div class="fragment">
-
-- **Low dispersion** of estimated moments
-</div>
-
-</div>
-
-</div>
-
-<div class="footnote-center">
-
-[Sample and characterization: Carmo et al. 2023](https://figshare.com/articles/dataset/QDM_magnetic_microscopy_dataset_of_a_speleothem_from_Morocco/22965200/1?file=40707380)
-</div>
-
-===============================================================================
-# Ceramic tile fragment
-<img src="assets/result-ceramic.png" style="width: 100%" >
-
-<div class="row">
-<div class="col text-left small">
-
-<div class="fragment">
-
-- **397 possible sources** detected
-</div>
-
-<div class="fragment">
-
-- **Mineralogy:** **titanomagnetite** (SD/PSD) carrying the NRM in a **stable and dispersed assemblage**
-</div>
-  
-</div>
-
-<div class="col text-left small">
-
-<div class="fragment">
-
-- Estimated moments are **reasonably concentrated**
-</div>
-
-</div>
-
-</div>
-
-<div class="footnote-center">
-
-[Sample and characterization: Poletti et al. (2016)](https://www.sciencedirect.com/science/article/pii/S0012821X16301625)
-</div>
-
-===============================================================================
-# Basaltic rock
-<img src="assets/result-basalt.png" style="width: 100%" >
-
-<div class="row">
-<div class="col text-left small">
-
-<div class="fragment">
-
-- **661 possible sources** identified
-</div>
-
-<div class="fragment">
-
-- **Mineralogy:** low-Ti **magnetite** ($10-50$ µm) with SD, PSD, and multidomain (MD) grains
-</div>
-
-</div>
-
-<div class="col text-left small">
-
-<div class="fragment">
-
-- Region with a **high concentration** of overlapping anomalies
-</div>
-
-<div class="fragment">
-
-- Estimated magnetic moments with **high dispersion**
-</div>
-
-</div>
-</div>
-
-<div class="footnote-center">
-
-[Sample and characterization: Moncinhatto et al. (2019)](https://academic.oup.com/gji/article/220/2/821/5603748)
-</div>
-
+<!-- .slide: data-background-opacity="1" data-background-image="assets/example_result.png"  data-background-size="contain" data-background-color="#080808e6" -->
 
 ===============================================================================
 <!-- .slide: data-background-opacity="1" data-background-image="assets/fatiando-website.png"  data-background-size="contain" data-background-color="#262626" -->
 
 ===============================================================================
 <!-- .slide: data-background-opacity="1" data-background-image="assets/documentation-home.png"  data-background-size="contain" data-background-color="#262626" -->
-
 
 ===============================================================================
 <!-- .slide: data-background-opacity="1" data-background-image="assets/documentation-api.png"  data-background-size="contain" data-background-color="#262626" -->
