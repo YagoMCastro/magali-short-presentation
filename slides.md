@@ -90,19 +90,17 @@ Application of magnetic measurements of rock minerals to solve geological proble
 
 <div class="text-left fragment">
 
-- QDM generates **magnetic field maps** of the sample's surface with **micrometric** spatial resolution at room temperature
+- Generates **magnetic field maps** with **micrometric** resolution at room temperature
 </div>
 
 <div class="text-left fragment">
 
-- **The Algorithmic Challenge:** the input is a dense N-dimensional grid with thousands of overlapping anomalous dipole sources
-
+- **Input:** dense grid with the signal of thousands of **overlapping dipole sources**
 </div>
 
 <div class="text-left fragment">
 
-- **Desired output**: spatial positions ($x, y, z$) and magnetic moments ($m_x, m_y, m_z$) of each individual particle.
-
+- **Output:** position ($x, y, z$) and moment ($m_x, m_y, m_z$) of each grain
 </div>
 
 ===============================================================================
@@ -438,7 +436,7 @@ Attributes:
 <span class="fragment code">    data_tga = mg.total_gradient_amplitude_grid(data_up)</span>
 
 ===============================================================================
-# Derivatives and TGA
+# TGA
 
 <div class="text-left">
 
@@ -510,35 +508,19 @@ $$||\vec{\mathbf{\nabla}}f(x, y, z)|| = \sqrt{(\partial_x f)^2 + (\partial_y f)^
 </code></pre>
 </section>
 
-
-
 ===============================================================================
 # Contrast Stretching
 
-<div class="text-center fragment">
+Rescale TGA values to highlight **weak** and **strong** signals:
 
-  - Rescale TGA values to highlight **weak** and **strong** signals  
-</div>
-<div class="text-center fragment">
-
-<ul>
-  <li> Pixel-wise transformation to normalize the data:
 <p>
 \[
 \text{TGA}_{\text{rescaled}} = 2 \left( \frac{\text{TGA} - v_{\min}}{v_{\max} - v_{\min}} \right) - 1
 \]
 </p>
 
-<ul>
-  <li>$ v_{\text{min}} = 1^\text{st} $ percentile</li>
-  <li>$ v_{\text{max}} = 99^\text{th} $ percentile</li>
-  <p><b>Output:</b> rescaled values in the range $[-1, 1]$</p>
-</ul>
-
-</div>
-
-- <!-- .element: class="fragment" -->
-
+- $v_{\text{min}}$ = 1st percentile, $v_{\text{max}}$ = 99th percentile
+- Output range: $[-1, 1]$
 
 ===============================================================================
 <!-- .slide: data-background-opacity="0" data-background-image="assets/installing-pip.png"  data-background-size="contain" data-background-color="#080808e6" -->
@@ -952,7 +934,7 @@ $$
 ===============================================================================
 # Problem Formulation
 <p class="text-left">
-We apply the aquation for $N$ observations of $b_z$:
+We apply the equation for $N$ observations of $b_z$:
 </p>
 </p>
 \[
@@ -984,7 +966,7 @@ b_{z_N}
 # Least-Squares Estimation
 <p class="text-left">Minimize misfit:</p>
 
-$$\Gamma(\mathbf{m}) = \|\mathbf{d}^{o}-\mathbf{A}\mathbf{m}\|^2=(\mathbf{d}^{o}-\mathbf{A}\mathbf{m})^T(\mathbf{d}^{o}-\mathbf{A}\mathbf{m})$$
+$$\Gamma(\mathbf{m}) = \|\|\mathbf{d}^{o}-\mathbf{A}\mathbf{m}\|\|^2=(\mathbf{d}^{o}-\mathbf{A}\mathbf{m})^T(\mathbf{d}^{o}-\mathbf{A}\mathbf{m})$$
 <p class="text-left">Which leads to the normal equations:</p>
 
 $$\mathbf{A}^T\mathbf{A}\mathbf{m} = \mathbf{A}^T\mathbf{d}^{o}$$
@@ -1068,14 +1050,12 @@ $$\mathbf{A}^T\mathbf{A}\mathbf{m} = \mathbf{A}^T\mathbf{d}^{o}$$
 
 <div class="fragment text-left">
 
-- We avoid the **direct coupling** of parameters with **very different orders of magnitude**. In simultaneous inversions, the difference between the scale of the location (**10⁻⁶ m**) and the moment (**10⁻¹³ Am²**) hinders convergence
-
+- Simultaneous inversion couples parameters of very **different scales** — location (**10⁻⁶ m**) vs. moment (**10⁻¹³ Am²**) — hindering convergence
 </div>
 
 <div class="fragment text-left">
 
-- We ensure a **well-scaled** problem by separating the inversion into **physically homogeneous groups**, eliminating the need for explicit parameter **normalization**
-
+- Separating into **physically homogeneous groups** avoids this without explicit **normalization**
 </div>
 
 ===============================================================================
@@ -1104,19 +1084,18 @@ $$\mathbf{A}^T\mathbf{A}\mathbf{m} = \mathbf{A}^T\mathbf{d}^{o}$$
 </ul>
 
 ===============================================================================
-# Optimization via Levenberg-Marquardt
+# Levenberg-Marquardt Optimization
 
 <div class="fragment text-left">
 
-- We use this method because it is **gradient-based**, making it better optimized compared to **derivative-free** methods such as Nelder-Mead for **smooth and differentiable** problems
-
+- **Gradient-based** method better suited for **smooth and differentiable** problems
 </div>
 
 <div class="fragment text-left">
 
 - We minimize the least-squares objective function $\Psi(\mathbf{v})$:
 
-$$\Psi(\mathbf{v}) = \| \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \|^2$$
+$$\Psi(\mathbf{v}) = \|\| \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \|\|^2$$
 
 - $\mathbf{v}$: position
 - $\mathbf{d}^o$: observed magnetic field data
@@ -1129,7 +1108,7 @@ $$\Psi(\mathbf{v}) = \| \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \|^2$$
 
 <div class="fragment text-left">
 
-- We update the location by solving the damped system for the increment ($\Delta \mathbf{v})$:
+- Update the location by solving the damped system for the displacement ($\Delta \mathbf{v})$:
 
 $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \mathbf{J}) \right) \Delta\mathbf{v} = \mathbf{J}^T \big( \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \big)$$
 
@@ -1141,35 +1120,18 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 </div>
 
 ===============================================================================
-# Marquardt Parameter
-
-<div class="text-left">
-
-- We initialize the **Marquardt parameter ($\alpha$)** in a non-arbitrary way, based on the median of the diagonal of the Hessian approximation for system conditioning:
-
-$$\alpha = S \cdot \text{median}(\text{diag}(\mathbf{J}^T\mathbf{J})) \quad \text{, } S = 10^{-20}$$
-
-</div>
-
-===============================================================================
 $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \mathbf{J}) \right) \Delta\mathbf{v} = \mathbf{J}^T \big( \mathbf{d}^o - \mathbf{d}(\mathbf{v}) \big)$$
 
 <div class="fragment text-left">
 
-- We dynamically adjust $\alpha$ using a **trust-region** strategy:
-  - **$\downarrow$ objective function value = Success:** we accept $\Delta \mathbf{v}$ and divide $\alpha$ by 10, tending toward **Gauss-Newton**
-    - Uses the Hessian curvature ($\mathbf{J}^T \mathbf{J}$) to take larger steps
-  - **$\uparrow$ objective function value = Failure:** we reject $\Delta \mathbf{v}$ and multiply $\alpha$ by 10, tending toward **Steepest Descent**
-    - The diagonal term dominates, making the step follow the negative gradient direction
+- $\alpha$ is adjusted dynamically via a **trust-region** strategy:
 
-</div>
+  - **Success ($\downarrow$ objective)**: accept $\Delta \mathbf{v}$, divide $\alpha$ by 10 → **Gauss-Newton** (larger steps)
 
-===============================================================================
-# Stability
+  - **Failure ($\uparrow$ objective)**: reject $\Delta \mathbf{v}$, multiply $\alpha$ by 10 → **Steepest Descent** (gradient direction)
 
-<div class="text-left">
+  - Maximum displacement capped at $\|\Delta \mathbf{v}\| \le 10~\mu m$ to prevent unrealistic updates
 
-- We limit the maximum displacement per iteration ($\|\Delta \mathbf{v}\| \le 10\mu m$) to avoid physically unrealistic updates and ensure that the solution remains within the data window
 
 </div>
 
@@ -1234,18 +1196,15 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 
 ===============================================================================
 # Distribution and Open Science
+
 <div class="fragment text-left">
 
-- **We adopt the pillars of Open Science**: transparent development on GitHub, public issue tracking, and complete documentation with reproducible tutorials
-
+- Transparent development on **GitHub**: public issues, full docs, reproducible tutorials
 </div>
 
 <div class="fragment text-left">
 
-- **Continuous Delivery (CD):** we will facilitate global access to our future **v1.0 release** through the scientific community’s standard package managers:
-  * **PyPI** (Python Package Index)
-  * **conda-forge** (reproducible environments)
-
+- **v1.0** will be distributed via **PyPI** and **conda-forge**
 </div>
 
 ===============================================================================
@@ -1256,7 +1215,7 @@ $$\left( \mathbf{J}^T \mathbf{J} + \alpha \cdot \mathrm{diag}(\mathbf{J}^T \math
 
 <div class="row">
 <div class="col">
-<div class="fragment text-center">
+<div class="text-center">
 <ul class="fragment text-left">
 
   <li><b>Magali</b> vs. <b>Souza-Junior et al. (2025)</b></li>
@@ -1273,8 +1232,8 @@ Two synthetic scenarios ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
 
 ===============================================================================
 <div class="row">
-<div class="col-medium"><img src="assets/simple-model-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
-<div class="col-medium"><img src="assets/one-interf-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
+<div class="col-medium">Simple Model<img src="assets/simple-model-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
+<div class="col-medium">1-Interf. Model<img src="assets/one-interf-2.png" style="width: 100%">Spacing: $0.3 \mu m$</div>
 </div>
 
 ===============================================================================
@@ -1290,31 +1249,6 @@ Two synthetic scenarios ($\Delta \in [0.3, 2.0]~\mu\text{m}$):
 <div class="row">
 <div class="col-medium"><img src="assets/intensity_simple.png" style="width: 100%" >Simple: ~90% lower</div>
 <div class="col-medium"><img src="assets/intensity_one_interf.png" style="width: 100%" >1-Interf.: ~80% higher</div>
-</div>
-
-===============================================================================
-<div class="row">
-<div class="col">
-
-- **Simple:** 
-  - Magali presents an intensity error very close to that of Souza-Junior et al. (2025), with both below <br>~1$\times10^{-14}Am^2$
-
-</div>
-
-<div class="col-medium"><img src="assets/intensity_simple.png" style="width: 100%" ></div>
-</div>
-
-===============================================================================
-<div class="row">
-<div class="col">
-
-- **1-Interf.:** 
-  - Souza-Junior et al. (2025) presents an intensity error of ~0.5$\times 10^{-14}Am^2$ 
-  - Magali presents an intensity error of ~0.6$\times 10^{-14}Am^2$
-
-</div>
-
-<div class="col-medium"><img src="assets/intensity_one_interf.png" style="width: 100%" ></div>
 </div>
 
 ===============================================================================
